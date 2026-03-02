@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title | default: site.title }}</title>
+  <meta name="description" content="{{ site.description }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+</head>
+<body>
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="{{ '/' | relative_url }}" class="nav-brand">Tabitha Oanda</a>
+      <div class="nav-links">
+        <a href="{{ '/' | relative_url }}#projects">Projects</a>
+        <a href="https://github.com/TabithaKO">GitHub</a>
+        <a href="https://www.tkobytabithaoanda.com/">Fashion</a>
+        <a href="mailto:tabitha_oanda@brown.edu">Contact</a>
+      </div>
+    </div>
+  </nav>
+  <main>
+    {{ content }}
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>&copy; 2026 Tabitha Oanda &middot; Brown University</p>
+    </div>
+  </footer>
+</body>
+</html>

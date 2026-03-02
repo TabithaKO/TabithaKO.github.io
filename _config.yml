@@ -1,0 +1,9 @@
+title: Tabitha Oanda
+description: Robotics engineer building manipulation systems for deformable objects.
+url: "https://tabithako.github.io"
+markdown: kramdown
+kramdown:
+  input: GFM
+keep_files:
+  - assets/videos
+  - assets/images
