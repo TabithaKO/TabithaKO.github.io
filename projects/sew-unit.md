@@ -98,7 +98,7 @@ The platform collects synchronized RGB-D video across four cameras while recordi
 
 **Camera setup:** 4× Intel RealSense cameras (D435i and D405) surrounding the workspace, calibrated individually with ChAruco boards (DICT_4X4_50, 5×4, 40mm squares). Best stereo pair achieved 0.68 RMS reprojection error. Automated hand-eye calibration maps each camera into robot-base coordinates.
 
-**Cloth and gripper segmentation:** Custom YOLOv5 models hand-annotated using labelImg, with separate detectors per fabric type (black, denim, red), each trained for ~500 epochs on train/val/test splits. Multi-camera RGB-D point clouds are color-coded by source camera for registration debugging.
+**Cloth and gripper segmentation:** Object detection and segmentation using foundation models (YOLOv5), hand-annotated with labelImg, with separate detectors per fabric type (black, denim, red), each trained for ~500 epochs on train/val/test splits. Multi-camera RGB-D point clouds are color-coded by source camera for registration debugging.
 
 **Gripper tracking:** Started with HSV color thresholding. Replaced with CoTracker 3 (Meta's learned point tracker) for robustness under changing lab lighting and partial occlusion, reliable across all 11 collected trajectories.
 

@@ -8,7 +8,7 @@ title: Tabitha Oanda
   <p class="subtitle">Robotics Engineer · Fashion Designer · PhD Researcher at Brown University</p>
 
   <p class="bio">
-    I build cloth manipulation systems from the ground up: custom aluminum frames, adapted robot arms, multi-camera perception pipelines, YOLO segmentation, force-sensing grippers, and teleoperation tools for data collection. My current focus is on running state-of-the-art deformable object dynamics methods on real cloth data I collected myself, and exploring whether visual feedback during training can improve dynamics predictions.
+    I build cloth manipulation systems from the ground up: custom aluminum frames, adapted robot arms, multi-camera perception pipelines, object detection and segmentation using foundation models, force-sensing grippers, and teleoperation tools for data collection. My current focus is on running state-of-the-art deformable object dynamics methods on real cloth data I collected myself, and exploring whether visual feedback during training can improve dynamics predictions.
   </p>
 
 </div>

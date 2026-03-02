@@ -21,7 +21,7 @@ I used PhysTwin to simulate and record cloth manipulation trajectories with the 
 <ul class="spec-list">
   <li><strong>Cameras:</strong> 4× Intel RealSense (D435i and D405) around the workspace</li>
   <li><strong>Calibration:</strong> ChAruco boards (DICT_4X4_50, 5×4, 40mm squares); best stereo pair: 0.68 RMS reprojection error. Automated hand-eye calibration for camera-to-robot-base transforms.</li>
-  <li><strong>Cloth segmentation:</strong> Custom YOLOv5 models trained on hand-annotated images (~500 epochs each), separate detector per fabric type (black, denim, red), annotated in labelImg with standard train/val/test splits</li>
+  <li><strong>Cloth segmentation:</strong> Object detection and segmentation using foundation models (YOLOv5), trained on hand-annotated images (~500 epochs each), separate detector per fabric type (black, denim, red), annotated in labelImg with standard train/val/test splits</li>
   <li><strong>Gripper tracking:</strong> Started with HSV color thresholding, replaced with CoTracker 3 (Meta's learned point tracker) for robustness under changing lighting and occlusion</li>
   <li><strong>Dataset:</strong> 11 annotated manipulation trajectories across black, denim, and red fabric; single-arm and dual-arm motions recorded at 3–30 Hz</li>
 </ul>
@@ -33,7 +33,7 @@ I used PhysTwin to simulate and record cloth manipulation trajectories with the 
 
 ### Simulation Rollouts
 
-Getting PhysTwin running on custom data required writing the full conversion pipeline: raw SO-101 teleop recordings → YOLO-masked particle tracks → CMA-ES spring parameter optimization → warp simulator training (200 iterations). Key issues: controller points needed to be within 1 cm of the cloth surface to couple properly, and single-gripper motions required manual spring softening (Y=1000) vs. the dual-gripper optimum (Y≈75k) for realistic drape.
+Getting PhysTwin running on custom data required writing the full conversion pipeline: raw SO-101 teleop recordings → segmentation-masked particle tracks → CMA-ES spring parameter optimization → warp simulator training (200 iterations). Key issues: controller points needed to be within 1 cm of the cloth surface to couple properly, and single-gripper motions required manual spring softening (Y=1000) vs. the dual-gripper optimum (Y≈75k) for realistic drape.
 
 This is the training trajectory: the sequence PhysTwin is optimized on. The particle-based simulator is fit to this real cloth episode, learning stiffness and damping parameters that reproduce the observed deformation.
 
