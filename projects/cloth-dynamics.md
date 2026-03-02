@@ -20,10 +20,10 @@ I used PhysTwin to simulate and record cloth manipulation trajectories with the 
 
 <ul class="spec-list">
   <li><strong>Cameras:</strong> 4× Intel RealSense (D435i and D405) around the workspace</li>
-  <li><strong>Calibration:</strong> ChAruco boards (DICT_4X4_50, 5×4, 40mm squares) — best stereo pair: 0.68 RMS reprojection error</li>
-  <li><strong>Hand-eye calibration:</strong> Automated pipeline for camera-to-robot-base transforms</li>
-  <li><strong>Gripper tracking:</strong> Started with HSV, replaced with CoTracker 3 for robustness under changing lighting</li>
-  <li><strong>Dataset:</strong> 11 annotated manipulation trajectories</li>
+  <li><strong>Calibration:</strong> ChAruco boards (DICT_4X4_50, 5×4, 40mm squares) — best stereo pair: 0.68 RMS reprojection error. Automated hand-eye calibration for camera-to-robot-base transforms.</li>
+  <li><strong>Cloth segmentation:</strong> Custom YOLOv5 models trained on hand-annotated images (~500 epochs each) — separate detector per fabric type (black, denim, red), annotated in labelImg with standard train/val/test splits</li>
+  <li><strong>Gripper tracking:</strong> Started with HSV color thresholding, replaced with CoTracker 3 (Meta's learned point tracker) for robustness under changing lighting and occlusion</li>
+  <li><strong>Dataset:</strong> 11 annotated manipulation trajectories across black, denim, and red fabric; single-arm and dual-arm motions recorded at 3–30 Hz</li>
 </ul>
 
 <div class="media-block">
@@ -32,6 +32,8 @@ I used PhysTwin to simulate and record cloth manipulation trajectories with the 
 </div>
 
 ### Simulation Rollouts
+
+Getting PhysTwin running on custom data required writing the full conversion pipeline: raw SO-101 teleop recordings → YOLO-masked particle tracks → CMA-ES spring parameter optimization → warp simulator training (200 iterations). Key issues: controller points needed to be within 1 cm of the cloth surface to couple properly, and single-gripper motions required manual spring softening (Y=1000) vs. the dual-gripper optimum (Y≈75k) for realistic drape.
 
 This is the training trajectory: the sequence PhysTwin is optimized on. The particle-based simulator is fit to this real cloth episode, learning stiffness and damping parameters that reproduce the observed deformation.
 
@@ -58,7 +60,7 @@ After fitting, the simulation is validated against held-out camera views. Each w
   <div class="media-caption">Camera 1 — same validation sequence from the second viewpoint.</div>
 </div>
 
-Once the physical parameters are learned from a single training trajectory, the simulator generalises to novel actions. These bimanual manipulation sequences were not seen during training but can be simulated with the fitted cloth parameters.
+Once the physical parameters are learned from a single training trajectory, the simulator generalises to novel actions — these bimanual sequences were entirely out-of-distribution (the model trained on observed push/slide motions, not folds or stretches). Motions tested: both grippers lift simultaneously, fold right over left, fold left over right, pull apart, twist in opposite directions, lift then stretch. The spring dynamics and gravity learned from one trajectory produce plausible cloth behaviour across all of them.
 
 <div class="media-block">
   <video autoplay muted loop playsinline>
@@ -85,17 +87,19 @@ Once the physical parameters are learned from a single training trajectory, the 
 
 ## Part 2: PGND — Training Mechanism Experiments
 
-I took Particle-Grid Neural Dynamics (PGND), a state-of-the-art method for learning deformable object models from RGB-D video, and ran it on their dataset while experimenting with different training mechanisms. Three variants, each adding a different supervisory signal on top of the baseline.
+I took Particle-Grid Neural Dynamics (PGND), a state-of-the-art method for learning deformable object models from RGB-D video, ran it on 80 training and 40 held-out evaluation episodes from my own robot, and explored whether adding visual supervision during training can improve dynamics predictions. This is active research — the results are mixed and honest framing matters here.
+
+The core question: every existing cloth dynamics method trains on 3D particle positions only, using rendering purely for visualization. Can closing the loop — using RGB images as a training signal — improve 3D prediction?
 
 ### The Three Models
 
-**Baseline (100k)** trains on particle position and velocity loss (`loss_x`, MSE per step) alone, with no camera input or visual signal. Predicts cloth dynamics purely from geometric state.
+**Baseline (100k)** trains on particle position loss (`loss_x`, MSE per step) alone with no visual signal. This is the benchmark all variants compare against. On 40 held-out episodes: MDE 0.451, Chamfer 0.233, EMD 0.447.
 
-**Phase 2 (40k)** adds a differentiable render loss during training: `λ_render = 0.1` (DINOv2 feature distance) + `λ_ssim = 0.2` (SSIM), applied every step against ground truth camera frames. A frozen diff-gaussian-rasterizer projects the predicted particle state into camera space and compares it against real RGB, giving the model an extra signal that penalises predictions which are geometrically plausible but visually wrong.
+**Phase 2 (40k)** adds a differentiable render loss with a frozen neural mesh renderer: `λ_render = 0.1` (DINOv2 feature distance) + `λ_ssim = 0.2` (SSIM). The key insight over earlier ablations was decoupling renderer training from dynamics training — train the renderer to convergence first, then finetune the dynamics model against it. Joint training (tested first) was unstable; the frozen renderer approach showed 15–32% MDE improvement on individual fabric types. Gains were inconsistent across all 40 evaluation episodes and sensitive to λ (values above 0.4 destabilize dynamics). A fundamental limitation: single-camera render loss can't distinguish "correct 3D" from "looks right from one angle."
 
-**Visual PGND (70k)** takes the render loss further with mesh-constrained Gaussian Splatting: each Gaussian is bound to a face of the particle mesh and deforms with it directly, rather than using the LBS approximation in Phase 2. This removes an approximation error in the rendering that limits how sharp the render loss gradient can be, and additionally conditions the dynamics model on camera observations at each rollout step via a frozen DINOv2 backbone, so the model can see when its predictions have drifted from reality and self-correct.
+**Visual PGND (70k)** replaces the LBS-based renderer with mesh-constrained Gaussian Splatting — each Gaussian bound directly to a mesh face, removing an approximation error that blurred the render loss gradient. Also adds camera conditioning at rollout via a frozen DINOv2 backbone, so the model can see when predictions drift and self-correct. Still training at time of writing.
 
-All three share the same particle-grid simulator core and are evaluated on held-out episodes, rolling out 30 steps autoregressively from ground truth initial conditions.
+All three share the same particle-grid simulator core (80 training episodes, indices 162–241) and are evaluated on 40 held-out episodes (indices 610–650), rolling out 30 steps autoregressively from ground truth initial conditions.
 
 ### Model Comparison — Episode 0201
 
@@ -153,11 +157,15 @@ Training also tracks `loss_x` (the MSE position loss, primary signal for all mod
 </div>
 
 <div class="lesson">
-  <p><strong>Visual conditioning helps but training is fragile.</strong> DINOv2 features add useful information, but the training dynamics are sensitive; the render loss curriculum schedule matters a lot. Phase 2 is the most stable improvement; Visual PGND at 70k is still training.</p>
+  <p><strong>Joint training with a crude renderer is worse than no render loss at all.</strong> The first ablation (LBS-based renderer trained jointly with dynamics) produced 16× worse MDE than baseline. A better renderer helps, but decoupling renderer training from dynamics finetuning was the key architectural decision that made render loss viable at all.</p>
 </div>
 
 <div class="lesson">
-  <p><strong>Evaluation set size matters.</strong> A 5-episode eval showed a 20% improvement. A 40-episode eval showed ~1%. Small eval sets are misleading; the 40-episode numbers are the ones I use.</p>
+  <p><strong>Evaluation set size matters more than you expect.</strong> A 5-episode eval showed a 20% improvement from visual conditioning. A 40-episode eval showed ~1%. The 5-episode result was episode selection bias. The 40-episode numbers are the ones I report.</p>
+</div>
+
+<div class="lesson">
+  <p><strong>Single-camera render loss has a fundamental ambiguity.</strong> The model can satisfy the 2D render loss by producing cloth that looks correct from one angle but is wrong in 3D. Multi-camera rendering should help; it's the next step.</p>
 </div>
 
 ---

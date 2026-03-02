@@ -8,7 +8,7 @@ title: Tabitha Oanda
   <p class="subtitle">Robotics Engineer · Fashion Designer · PhD Researcher at Brown University</p>
 
   <p class="bio">
-    I build cloth manipulation systems: custom end effectors and data collection tools, multi-camera perception pipelines, grippers with enhanced tactile sensing, and the software to tie it all together. My focus is on taking state-of-the-art methods out of papers and making them work reliably on real hardware and real fabric.
+    I build cloth manipulation systems from the ground up: custom aluminum frames, adapted robot arms, multi-camera perception pipelines, YOLO segmentation, force-sensing grippers, and teleoperation tools for data collection. My current focus is on running state-of-the-art deformable object dynamics methods on real cloth data I collected myself, and exploring whether visual feedback during training can improve dynamics predictions.
   </p>
 
 </div>
@@ -36,7 +36,7 @@ title: Tabitha Oanda
 
   <a class="project-card" href="projects/cloth-dynamics">
     <h3>Learning Cloth Dynamics</h3>
-    <p>Took a state-of-the-art particle-based dynamics model, got it running on my own data, and extended it with visual conditioning. Three model variants trained on real cloth manipulation trajectories.</p>
+    <p>Ran PhysTwin and PGND on cloth data I collected, built the full perception and data pipeline, then explored whether adding visual supervision to dynamics training improves 3D predictions. Results are promising on individual fabrics; active research.</p>
     <span class="card-arrow">View project →</span>
   </a>
 

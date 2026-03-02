@@ -24,7 +24,7 @@ title: The Sew Unit
 ## Hardware
 
 <ul class="spec-list">
-  <li><strong>Arms:</strong> Two SO-101 robot arms (LeRobot platform), mounted inverted on a custom aluminum extrusion frame</li>
+  <li><strong>Arms:</strong> Two <a href="https://huggingface.co/docs/lerobot/en/so101">SO-101 arms</a> from the HuggingFace LeRobot platform — open-source research arms I adapted for inverted mounting. I didn't design the robots; the work was in the URDF modifications for flipped gravity compensation, joint limit tuning, and merging two independent controllers onto a single unified serial bus.</li>
   <li><strong>Workspace:</strong> Ender 3 printer bed, flat, rigid, and replaceable</li>
   <li><strong>Servos:</strong> STS/SCS series servo motors, 12 total (6 per arm)</li>
   <li><strong>Controllers:</strong> Unified serial controller managing both arms over a single bus, built after two independent controllers kept causing port conflicts</li>
@@ -89,6 +89,20 @@ The primary data collection method is leader-follower teleoperation. The leader 
     <div class="media-caption">Result after a teleoperated cloth fold — denim on the workspace.</div>
   </div>
 </div>
+
+---
+
+## Perception & Data Collection
+
+The platform collects synchronized RGB-D video across four cameras while recording joint states at configurable rate (10–30 Hz). Turning that raw data into 3D particle tracks that dynamics models can train on required building a complete perception pipeline from scratch.
+
+**Camera setup:** 4× Intel RealSense cameras (D435i and D405) surrounding the workspace, calibrated individually with ChAruco boards (DICT_4X4_50, 5×4, 40mm squares). Best stereo pair achieved 0.68 RMS reprojection error. Automated hand-eye calibration maps each camera into robot-base coordinates.
+
+**Cloth and gripper segmentation:** Custom YOLOv5 models hand-annotated using labelImg — separate detectors per fabric type (black, denim, red), each trained for ~500 epochs on train/val/test splits. Multi-camera RGB-D point clouds are color-coded by source camera for registration debugging.
+
+**Gripper tracking:** Started with HSV color thresholding. Replaced with CoTracker 3 (Meta's learned point tracker) for robustness under changing lab lighting and partial occlusion — reliable across all 11 collected trajectories.
+
+**Dataset:** 11 annotated bimanual manipulation trajectories across single-arm and dual-arm motions, three fabric types (black, denim, red), with synchronized joint states and multi-camera RGB-D.
 
 ---
 
