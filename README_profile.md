@@ -10,7 +10,7 @@ A bimanual robot platform I designed and built from scratch: custom aluminum ext
 
 <table><tr>
 <td><video src="https://github.com/user-attachments/assets/8458be10-d610-4612-bc3f-9db06929b35f" autoplay loop muted playsinline></video></td>
-<td><video src="https://github.com/user-attachments/assets/48f85f00-bee7-4947-a7c1-6855fd8b9cf9" autoplay loop muted playsinline></video></td>
+<td><video src="https://github.com/user-attachments/assets/3f2f512f-6598-4937-bb3f-87dc7133cae9" autoplay loop muted playsinline></video></td>
 </tr></table>
 
 *CAD model spin · Real robot executing a bimanual trajectory*
