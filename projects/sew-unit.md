@@ -24,7 +24,7 @@ title: The Sew Unit
 ## Hardware
 
 <ul class="spec-list">
-  <li><strong>Arms:</strong> Two <a href="https://huggingface.co/docs/lerobot/en/so101">SO-101 arms</a> from the HuggingFace LeRobot platform — open-source research arms I adapted for inverted mounting. I didn't design the robots; the work was in the URDF modifications for flipped gravity compensation, joint limit tuning, and merging two independent controllers onto a single unified serial bus.</li>
+  <li><strong>Arms:</strong> Two <a href="https://huggingface.co/docs/lerobot/en/so101">SO-101 arms</a> from the HuggingFace LeRobot platform, open-source research arms I adapted for inverted mounting. I didn't design the robots; the work was in the URDF modifications for flipped gravity compensation, joint limit tuning, and merging two independent controllers onto a single unified serial bus.</li>
   <li><strong>Workspace:</strong> Ender 3 printer bed, flat, rigid, and replaceable</li>
   <li><strong>Servos:</strong> STS/SCS series servo motors, 12 total (6 per arm)</li>
   <li><strong>Controllers:</strong> Unified serial controller managing both arms over a single bus, built after two independent controllers kept causing port conflicts</li>
@@ -35,13 +35,13 @@ title: The Sew Unit
     <video autoplay muted loop playsinline>
       <source src="../assets/videos/sew-unit-frame-spin.mp4" type="video/mp4">
     </video>
-    <div class="media-caption">Custom aluminum extrusion frame — CAD model.</div>
+    <div class="media-caption">Custom aluminum extrusion frame (CAD render).</div>
   </div>
   <div class="media-block">
     <video autoplay muted loop playsinline>
       <source src="../assets/videos/sew-unit-cad-spin.mp4" type="video/mp4">
     </video>
-    <div class="media-caption">Full sew unit with both arms — CAD model spin.</div>
+    <div class="media-caption">Full sew unit with both arms (CAD model spin).</div>
   </div>
 </div>
 
@@ -62,7 +62,7 @@ ROS2 and MoveIt with custom URDF configurations. The inverted mounting orientati
     <video autoplay muted loop playsinline>
       <source src="../assets/videos/sew-unit-digital-twin.mp4" type="video/mp4">
     </video>
-    <div class="media-caption">Digital twin — the same trajectory in simulation.</div>
+    <div class="media-caption">Digital twin: the same trajectory in simulation.</div>
   </div>
 </div>
 
@@ -76,17 +76,17 @@ The primary data collection method is leader-follower teleoperation. The leader 
   <video autoplay muted loop playsinline>
     <source src="../assets/videos/sew-unit-teleop-leader.mp4" type="video/mp4">
   </video>
-  <div class="media-caption">Leader arm teleoperation — operator moves the leader, follower mirrors exactly.</div>
+  <div class="media-caption">Leader arm teleoperation. The operator moves the leader; follower mirrors exactly.</div>
 </div>
 
 <div class="image-row">
   <div class="media-block photo">
     <img src="../assets/images/sew-unit-red-pinch.jpg" alt="Both follower arms pinching red cloth with silicone gripper tips">
-    <div class="media-caption">Both arms pinching red cloth — silicone gripper tips visible.</div>
+    <div class="media-caption">Both arms pinching red cloth. Silicone gripper tips visible.</div>
   </div>
   <div class="media-block photo">
     <img src="../assets/images/sew-unit-fold-result.jpg" alt="Denim cloth folded on workspace after teleop data collection run">
-    <div class="media-caption">Result after a teleoperated cloth fold — denim on the workspace.</div>
+    <div class="media-caption">Result after a teleoperated cloth fold. Denim on the workspace.</div>
   </div>
 </div>
 
@@ -98,9 +98,9 @@ The platform collects synchronized RGB-D video across four cameras while recordi
 
 **Camera setup:** 4× Intel RealSense cameras (D435i and D405) surrounding the workspace, calibrated individually with ChAruco boards (DICT_4X4_50, 5×4, 40mm squares). Best stereo pair achieved 0.68 RMS reprojection error. Automated hand-eye calibration maps each camera into robot-base coordinates.
 
-**Cloth and gripper segmentation:** Custom YOLOv5 models hand-annotated using labelImg — separate detectors per fabric type (black, denim, red), each trained for ~500 epochs on train/val/test splits. Multi-camera RGB-D point clouds are color-coded by source camera for registration debugging.
+**Cloth and gripper segmentation:** Custom YOLOv5 models hand-annotated using labelImg, with separate detectors per fabric type (black, denim, red), each trained for ~500 epochs on train/val/test splits. Multi-camera RGB-D point clouds are color-coded by source camera for registration debugging.
 
-**Gripper tracking:** Started with HSV color thresholding. Replaced with CoTracker 3 (Meta's learned point tracker) for robustness under changing lab lighting and partial occlusion — reliable across all 11 collected trajectories.
+**Gripper tracking:** Started with HSV color thresholding. Replaced with CoTracker 3 (Meta's learned point tracker) for robustness under changing lab lighting and partial occlusion, reliable across all 11 collected trajectories.
 
 **Dataset:** 11 annotated bimanual manipulation trajectories across single-arm and dual-arm motions, three fabric types (black, denim, red), with synchronized joint states and multi-camera RGB-D.
 

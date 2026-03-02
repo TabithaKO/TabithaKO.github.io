@@ -15,7 +15,7 @@ title: Tabitha Oanda
 
 <div class="hero-split">
   <div class="media-block">
-    <img src="assets/images/sew-unit-hero.jpg" alt="Sew unit — dual SO-101 arms built from scratch at Brown">
+    <img src="assets/images/sew-unit-hero.jpg" alt="Sew unit, dual SO-101 arms built from scratch at Brown">
   </div>
   <div class="media-block">
     <video autoplay muted loop playsinline>
@@ -30,7 +30,7 @@ title: Tabitha Oanda
 <div class="project-grid">
   <a class="project-card" href="projects/sew-unit">
     <h3>The Sew Unit</h3>
-    <p>A bimanual cloth manipulation platform built from scratch — custom aluminum frame, SO-101 arms, MoveIt planning, and leader-follower teleoperation. All designed, built, and debugged by hand.</p>
+    <p>A bimanual cloth manipulation platform built from scratch: custom aluminum frame, SO-101 arms, MoveIt planning, and leader-follower teleoperation. All designed, built, and debugged by hand.</p>
     <span class="card-arrow">View project →</span>
   </a>
 
