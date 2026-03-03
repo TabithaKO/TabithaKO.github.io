@@ -131,6 +131,13 @@ code {
   color: var(--text);
   line-height: 1.8;
 }
+.bio-list {
+  font-size: 1.05rem;
+  color: var(--text);
+  line-height: 1.8;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
 .hero .contact-row {
   margin-top: 1.25rem;
   display: flex;

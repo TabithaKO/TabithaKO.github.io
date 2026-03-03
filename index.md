@@ -8,8 +8,16 @@ title: Tabitha Oanda
   <p class="subtitle">Robotics Engineer · Fashion Designer · PhD Researcher at Brown University</p>
 
   <p class="bio">
-    I build cloth manipulation systems from the ground up: custom aluminum frames, adapted robot arms, multi-camera perception pipelines, object detection and segmentation using foundation models, force-sensing grippers, and teleoperation tools for data collection. My current focus is on running state-of-the-art deformable object dynamics methods on real cloth data I collected myself, and exploring whether visual feedback during training can improve dynamics predictions.
+    Cloth is deformable, slippery, and hard to track — which means off-the-shelf robot setups don't cut it. I build the full stack: a bimanual hardware platform for manipulation, multi-camera perception using foundation vision models to detect and segment fabric across frames in 3D. I use teleoperation tools that make collecting training data practical. Following data collection, I train cloth dynamics models that can be used for model predictive control (MPC) and reinforcement learning policies for complex tasks.
   </p>
+
+  <p class="bio">My research is on getting robots to handle fabric reliably. That requires building the whole stack:</p>
+  <ul class="bio-list">
+    <li><strong>Platform:</strong> custom aluminum frame, overhead-mounted bimanual arms, force-sensing silicone grippers</li>
+    <li><strong>Perception:</strong> multi-camera RGB-D, object detection and segmentation, 3D point tracking</li>
+    <li><strong>Data collection:</strong> leader-follower teleoperation for imitation learning, custom <a href="https://umi-gripper.github.io/">UMI-inspired</a> data collection gripper</li>
+    <li><strong>Learning:</strong> cloth dynamics models trained and extended on data from my custom setup</li>
+  </ul>
 
 </div>
 
