@@ -87,7 +87,7 @@ Once the physical parameters are learned from a single training trajectory, the 
 
 ## Part 2: [PGND](https://kywind.github.io/pgnd) — Training Mechanism Experiments
 
-I took [Particle-Grid Neural Dynamics (PGND)](https://kywind.github.io/pgnd), a state-of-the-art method for learning deformable object models from RGB-D video, ran it on 80 training and 40 held-out evaluation episodes from my own robot, and explored whether adding visual supervision during training can improve dynamics predictions. A consistent theme in my research is taking methods developed in academic settings and adapting them to work on real cloth manipulation problems — the kind of contact-rich, deformable-object tasks that matter for industrial textile handling. This is active research; the results are mixed and honest framing matters here.
+I took [Particle-Grid Neural Dynamics (PGND)](https://kywind.github.io/pgnd), a state-of-the-art method for learning deformable object models from RGB-D video, ran it on 80 training and 40 held-out evaluation episodes from my own robot, and explored whether adding visual supervision during training can improve dynamics predictions. This is active research; the results are mixed and honest framing matters here.
 
 The core question: every existing cloth dynamics method trains on 3D particle positions only, using rendering purely for visualization. Can closing the loop by using RGB images as a training signal improve 3D prediction?
 
