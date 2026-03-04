@@ -7,14 +7,14 @@ title: Learning Cloth Dynamics
 
 <div class="project-header">
   <h1>Learning Cloth Dynamics</h1>
-  <p class="lead">Two parallel threads: building a custom cloth manipulation dataset using PhysTwin on the sew unit, and running PGND on their data while experimenting with different training mechanisms, including photometric render loss and live camera conditioning at rollout time.</p>
+  <p class="lead">Two parallel threads: building a custom cloth manipulation dataset using <a href="https://arxiv.org/abs/2503.17973">PhysTwin</a> on the sew unit, and running <a href="https://kywind.github.io/pgnd">PGND</a> on their data while experimenting with different training mechanisms, including photometric render loss inspired by <a href="https://kth-rpl.github.io/cloth-splatting/">Cloth Splatting</a> and live camera conditioning at rollout time.</p>
 </div>
 
 ---
 
-## Part 1: PhysTwin — Custom Cloth Data
+## Part 1: [PhysTwin](https://arxiv.org/abs/2503.17973) — Custom Cloth Data
 
-I used PhysTwin to simulate and record cloth manipulation trajectories with the sew unit's bimanual setup. PhysTwin fits a particle-based simulation to real cloth by optimizing physical parameters (stiffness, damping, mass) directly from observed RGB-D sequences, so the simulated cloth behaves like the actual fabric being manipulated. That required building a multi-camera perception pipeline to turn raw RGB-D video into the 3D particle tracks PhysTwin trains on.
+I used [PhysTwin](https://arxiv.org/abs/2503.17973) to simulate and record cloth manipulation trajectories with the sew unit's bimanual setup. PhysTwin fits a particle-based simulation to real cloth by optimizing physical parameters (stiffness, damping, mass) directly from observed RGB-D sequences, so the simulated cloth behaves like the actual fabric being manipulated. That required building a multi-camera perception pipeline to turn raw RGB-D video into the 3D particle tracks PhysTwin trains on.
 
 ### Perception Infrastructure
 
@@ -33,7 +33,7 @@ I used PhysTwin to simulate and record cloth manipulation trajectories with the 
 
 ### Simulation Rollouts
 
-Getting PhysTwin running on custom data required writing the full conversion pipeline: raw SO-101 teleop recordings → segmentation-masked particle tracks → CMA-ES spring parameter optimization → warp simulator training (200 iterations). Key issues: controller points needed to be within 1 cm of the cloth surface to couple properly, and single-gripper motions required manual spring softening (Y=1000) vs. the dual-gripper optimum (Y≈75k) for realistic drape.
+Getting [PhysTwin](https://arxiv.org/abs/2503.17973) running on custom data required writing the full conversion pipeline: raw SO-101 teleop recordings → segmentation-masked particle tracks → CMA-ES spring parameter optimization → warp simulator training (200 iterations). Key issues: controller points needed to be within 1 cm of the cloth surface to couple properly, and single-gripper motions required manual spring softening (Y=1000) vs. the dual-gripper optimum (Y≈75k) for realistic drape.
 
 This is the training trajectory: the sequence PhysTwin is optimized on. The particle-based simulator is fit to this real cloth episode, learning stiffness and damping parameters that reproduce the observed deformation.
 
@@ -85,9 +85,9 @@ Once the physical parameters are learned from a single training trajectory, the 
 
 ---
 
-## Part 2: PGND — Training Mechanism Experiments
+## Part 2: [PGND](https://kywind.github.io/pgnd) — Training Mechanism Experiments
 
-I took Particle-Grid Neural Dynamics (PGND), a state-of-the-art method for learning deformable object models from RGB-D video, ran it on 80 training and 40 held-out evaluation episodes from my own robot, and explored whether adding visual supervision during training can improve dynamics predictions. This is active research; the results are mixed and honest framing matters here.
+I took [Particle-Grid Neural Dynamics (PGND)](https://kywind.github.io/pgnd), a state-of-the-art method for learning deformable object models from RGB-D video, ran it on 80 training and 40 held-out evaluation episodes from my own robot, and explored whether adding visual supervision during training can improve dynamics predictions. A consistent theme in my research is taking methods developed in academic settings and adapting them to work on real cloth manipulation problems — the kind of contact-rich, deformable-object tasks that matter for industrial textile handling. This is active research; the results are mixed and honest framing matters here.
 
 The core question: every existing cloth dynamics method trains on 3D particle positions only, using rendering purely for visualization. Can closing the loop by using RGB images as a training signal improve 3D prediction?
 
@@ -95,9 +95,9 @@ The core question: every existing cloth dynamics method trains on 3D particle po
 
 **Baseline (100k)** trains on particle position loss (`loss_x`, MSE per step) alone with no visual signal. This is the benchmark all variants compare against. On 40 held-out episodes: MDE 0.451, Chamfer 0.233, EMD 0.447.
 
-**Phase 2 (40k)** adds a differentiable render loss with a frozen neural mesh renderer: `λ_render = 0.1` (DINOv2 feature distance) + `λ_ssim = 0.2` (SSIM). The key insight over earlier ablations was decoupling renderer training from dynamics training: train the renderer to convergence first, then finetune the dynamics model against it. Joint training (tested first) was unstable; the frozen renderer approach showed 15–32% MDE improvement on individual fabric types. Gains were inconsistent across all 40 evaluation episodes and sensitive to λ (values above 0.4 destabilize dynamics). A fundamental limitation: single-camera render loss can't distinguish "correct 3D" from "looks right from one angle."
+**Phase 2 (40k)** adds a differentiable render loss with a frozen neural mesh renderer: `λ_render = 0.1` (DINOv2 feature distance) + `λ_ssim = 0.2` (SSIM). This approach was inspired by [Cloth Splatting](https://kth-rpl.github.io/cloth-splatting/), which demonstrated that photometric supervision can provide useful signal for learning cloth dynamics. The key insight over earlier ablations was decoupling renderer training from dynamics training: train the renderer to convergence first, then finetune the dynamics model against it. Joint training (tested first) was unstable; the frozen renderer approach showed 15–32% MDE improvement on individual fabric types. Gains were inconsistent across all 40 evaluation episodes and sensitive to λ (values above 0.4 destabilize dynamics). A fundamental limitation: single-camera render loss can't distinguish "correct 3D" from "looks right from one angle."
 
-**Visual PGND (70k)** replaces the LBS-based renderer with mesh-constrained Gaussian Splatting, with each Gaussian bound directly to a mesh face, removing an approximation error that blurred the render loss gradient. Also adds camera conditioning at rollout via a frozen DINOv2 backbone, so the model can see when predictions drift and self-correct. Still training at time of writing.
+**Visual PGND (70k)** replaces the LBS-based renderer with mesh-constrained Gaussian Splatting — directly inspired by [Cloth Splatting](https://kth-rpl.github.io/cloth-splatting/) — with each Gaussian bound directly to a mesh face, removing an approximation error that blurred the render loss gradient. Also adds camera conditioning at rollout via a frozen DINOv2 backbone, so the model can see when predictions drift and self-correct. Still training at time of writing.
 
 All three share the same particle-grid simulator core (80 training episodes, indices 162–241) and are evaluated on 40 held-out episodes (indices 610–650), rolling out 30 steps autoregressively from ground truth initial conditions.
 

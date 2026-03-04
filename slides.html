@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloth Manipulation — Tabitha Oanda</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #1a1a1a;
+      --border: #2e2e2e;
+      --text: #f0f0f0;
+      --muted: #888;
+      --accent: #7eb8f7;
+      --label-bg: rgba(126,184,247,0.12);
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── Deck & Slides ── */
+    .deck { width: 100vw; height: 100vh; position: relative; }
+
+    .slide {
+      position: absolute; inset: 0;
+      display: none;
+      padding: 3rem 3.5rem 2.5rem;
+      flex-direction: column;
+    }
+    .slide.active { display: flex; }
+
+    /* ── Shared typography ── */
+    .slide-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--label-bg);
+      display: inline-block;
+      padding: 0.25em 0.75em;
+      border-radius: 99px;
+      margin-bottom: 0.75rem;
+    }
+    h1 { font-size: 2.6rem; font-weight: 700; line-height: 1.15; }
+    h2 { font-size: 1.9rem; font-weight: 700; line-height: 1.2; }
+    h3 { font-size: 1rem; font-weight: 600; color: var(--accent); margin-bottom: 0.4rem; }
+    p, li { font-size: 0.92rem; line-height: 1.7; color: #ccc; }
+    ul { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    ul li::before { content: "→ "; color: var(--accent); font-weight: 600; }
+    strong { color: var(--text); font-weight: 600; }
+
+    /* ── Media helpers ── */
+    video, img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+    }
+    .media-wrap {
+      border-radius: 8px;
+      overflow: hidden;
+      background: #000;
+      flex-shrink: 0;
+    }
+    .caption {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+      text-align: center;
+    }
+
+    /* ── Layout atoms ── */
+    .row { display: flex; gap: 1.25rem; flex: 1; min-height: 0; }
+    .col { display: flex; flex-direction: column; }
+    .col-text { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; gap: 1.25rem; }
+    .col-media { flex: 1; display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+    .flex1 { flex: 1; min-height: 0; min-width: 0; }
+
+    /* ── Slide 1 — Title ── */
+    #s1 { justify-content: space-between; }
+    #s1 .title-block { flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 520px; gap: 1rem; }
+    #s1 .title-block .sub { font-size: 1.05rem; color: var(--muted); }
+    #s1 .title-block .byline { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 0.5rem; }
+    #s1 .media-pair { display: flex; gap: 1rem; width: 52%; align-self: stretch; }
+    #s1 .media-pair .media-wrap { flex: 1; min-height: 0; }
+
+    /* ── Slide 2 — Sew Unit ── */
+    #s2 .header { margin-bottom: 1.25rem; }
+    #s2 .body { display: flex; gap: 1.5rem; flex: 1; min-height: 0; }
+    #s2 .specs-block { display: flex; flex-direction: column; gap: 1rem; }
+    #s2 .spec-group { background: var(--surface); border-radius: 8px; padding: 0.9rem 1.1rem; }
+
+    /* ── Slide 3 — Perception ── */
+    #s3 .header { margin-bottom: 1.25rem; }
+    #s3 .body { display: flex; gap: 1.5rem; flex: 1; min-height: 0; }
+    #s3 .left { flex: 1.4; display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
+    #s3 .right { flex: 0.9; display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
+    #s3 .pipeline-steps { display: flex; flex-direction: column; gap: 0.5rem; justify-content: center; flex: 1; }
+    #s3 .step {
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      padding: 0.55rem 0.9rem;
+      font-size: 0.85rem;
+      color: #ddd;
+    }
+    #s3 .step strong { display: block; font-size: 0.75rem; color: var(--accent); margin-bottom: 0.1rem; }
+
+    /* ── Slide 4 — Cloth Dynamics ── */
+    #s4 .header { margin-bottom: 1.25rem; }
+    #s4 .body { display: flex; gap: 1.25rem; flex: 1; min-height: 0; }
+    #s4 .model-col { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+    #s4 .model-label {
+      font-size: 0.75rem; font-weight: 600;
+      padding: 0.3rem 0.7rem;
+      border-radius: 4px;
+      text-align: center;
+    }
+    #s4 .label-baseline { background: #2a2a2a; color: #aaa; }
+    #s4 .label-phase2   { background: rgba(126,184,247,0.15); color: var(--accent); }
+    #s4 .label-visual   { background: rgba(100,220,140,0.15); color: #7de0a0; }
+    #s4 .metrics {
+      width: 220px; flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 0.75rem; justify-content: center;
+    }
+    #s4 .metric-card {
+      background: var(--surface); border-radius: 8px; padding: 0.8rem 1rem;
+    }
+    #s4 .metric-card .val { font-size: 1.5rem; font-weight: 700; color: var(--text); }
+    #s4 .metric-card .lbl { font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
+
+    /* ── Slide 5 — Grippers ── */
+    #s5 .header { margin-bottom: 1.25rem; }
+    #s5 .body { display: flex; gap: 1.25rem; flex: 1; min-height: 0; }
+    #s5 .gripper-col { flex: 1; display: flex; flex-direction: column; gap: 0.6rem; min-width: 0; }
+    #s5 .gripper-col .section-title {
+      font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--accent);
+      padding-bottom: 0.3rem; border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Nav ── */
+    .nav {
+      position: fixed; bottom: 1.5rem; right: 2rem;
+      display: flex; gap: 0.5rem; align-items: center; z-index: 100;
+    }
+    .nav button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 2.2rem; height: 2.2rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav button:hover { background: #2a2a2a; }
+    .nav .counter { font-size: 0.8rem; color: var(--muted); min-width: 3rem; text-align: center; }
+
+    .progress {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: 2px; background: var(--border);
+    }
+    .progress-bar { height: 100%; background: var(--accent); transition: width 0.3s; }
+  </style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 1 — TITLE
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide active" id="s1">
+    <div class="title-block">
+      <div class="slide-label">PhD Research · Brown University</div>
+      <h1>Cloth Manipulation<br>from the Ground Up</h1>
+      <p class="sub">Building the full stack for reliable fabric handling on real robots: hardware, perception, teleoperation, and cloth dynamics learning.</p>
+      <p class="byline">
+        <strong>Tabitha Oanda</strong><br>
+        Advised by Prof. Nora Ayanian · Robotics Group
+      </p>
+    </div>
+    <div class="media-pair">
+      <div class="media-wrap">
+        <img src="assets/images/sew-unit-hero.jpg" alt="Sew unit">
+      </div>
+      <div class="media-wrap">
+        <video autoplay muted loop playsinline>
+          <source src="assets/videos/red-lift.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 2 — SEW UNIT
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s2">
+    <div class="header">
+      <div class="slide-label">Hardware Platform</div>
+      <h2>The Sew Unit — Bimanual Cloth Manipulation</h2>
+    </div>
+    <div class="body">
+      <div class="col-text">
+        <div class="specs-block">
+          <div class="spec-group">
+            <h3>Arms</h3>
+            <ul>
+              <li>2× SO-101 arms (HuggingFace LeRobot), inverted mount</li>
+              <li>12 STS/SCS servos, unified serial bus</li>
+              <li>Custom URDF: gravity compensation, joint limit re-tuning</li>
+            </ul>
+          </div>
+          <div class="spec-group">
+            <h3>Motion Planning</h3>
+            <ul>
+              <li>ROS2 + MoveIt trajectory planning</li>
+              <li>Digital twin for trajectory validation</li>
+              <li>Leader-follower teleoperation for data collection</li>
+            </ul>
+          </div>
+          <div class="spec-group">
+            <h3>Workspace</h3>
+            <ul>
+              <li>Custom aluminum extrusion frame</li>
+              <li>Ender 3 bed — flat, rigid, replaceable surface</li>
+              <li>4× Intel RealSense RGB-D cameras</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-media">
+        <div class="media-wrap flex1">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/sew-unit-cad-spin.mp4" type="video/mp4">
+          </video>
+        </div>
+        <p class="caption">CAD model spin</p>
+        <div class="media-wrap flex1">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/sew-unit-mirror-bimanual.mp4" type="video/mp4">
+          </video>
+        </div>
+        <p class="caption">Real robot executing a recorded bimanual trajectory</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 3 — PERCEPTION PIPELINE
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s3">
+    <div class="header">
+      <div class="slide-label">Perception & Data</div>
+      <h2>Seeing the Cloth in 3D</h2>
+    </div>
+    <div class="body">
+      <div class="left">
+        <div class="media-wrap flex1">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/cloth-dynamics-triptych-cam0.mp4" type="video/mp4">
+          </video>
+        </div>
+        <p class="caption">Camera 0: real RGB · point cloud reconstruction · PhysTwin prediction</p>
+        <div class="media-wrap" style="height: 160px; flex-shrink: 0;">
+          <img src="assets/images/cloth-dynamics-pointcloud-grid.png" alt="Point cloud grid">
+        </div>
+        <p class="caption">Multi-camera point cloud registration across trajectories</p>
+      </div>
+      <div class="right">
+        <div class="pipeline-steps">
+          <div class="step"><strong>Cameras</strong>4× RealSense D435i/D405, ChArUco calibration · 0.68 RMS reprojection error</div>
+          <div class="step"><strong>Cloth Segmentation</strong>Foundation model object detection (YOLOv5) · separate detector per fabric type (black, denim, red)</div>
+          <div class="step"><strong>Gripper Tracking</strong>CoTracker 3 (Meta) learned point tracker — robust under changing lighting and occlusion</div>
+          <div class="step"><strong>3D Reconstruction</strong>Masked RGB-D → fused point clouds in robot-base frame</div>
+          <div class="step"><strong>Dataset</strong>11 annotated bimanual trajectories · 3 fabric types · 3–30 Hz · synchronized joint states</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 4 — CLOTH DYNAMICS
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s4">
+    <div class="header">
+      <div class="slide-label">Learning</div>
+      <h2>Learning Cloth Dynamics — PGND</h2>
+    </div>
+    <div class="body">
+      <div class="model-col">
+        <div class="model-label label-baseline">Baseline (100k) — geometry only</div>
+        <div class="media-wrap flex1">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/pgnd-ep0201-baseline.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <div class="model-col">
+        <div class="model-label label-phase2">Phase 2 (40k) — + DINOv2 render loss + SSIM</div>
+        <div class="media-wrap flex1">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/pgnd-ep0201-phase2.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <div class="model-col">
+        <div class="model-label label-visual">Visual PGND (70k) — + mesh-constrained GS + camera conditioning</div>
+        <div class="media-wrap flex1">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/pgnd-ep0201-visual.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <div class="metrics">
+        <p style="font-size:0.78rem; color:var(--muted); margin-bottom:0.25rem;">Baseline · 40 held-out episodes</p>
+        <div class="metric-card">
+          <div class="val">0.451</div>
+          <div class="lbl">MDE — Mean Displacement Error</div>
+        </div>
+        <div class="metric-card">
+          <div class="val">0.233</div>
+          <div class="lbl">Chamfer Distance</div>
+        </div>
+        <div class="metric-card">
+          <div class="val">0.447</div>
+          <div class="lbl">EMD — Earth Mover's Distance</div>
+        </div>
+        <div class="metric-card" style="border-left: 3px solid var(--accent);">
+          <div class="val" style="color:var(--accent);">−32%</div>
+          <div class="lbl">MDE improvement (Phase 2, per-fabric)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 5 — GRIPPERS
+  ══════════════════════════════════════════════════════ -->
+  <div class="slide" id="s5">
+    <div class="header">
+      <div class="slide-label">End-Effectors</div>
+      <h2>Custom Grippers & Teleop Tools</h2>
+    </div>
+    <div class="body">
+      <div class="gripper-col">
+        <div class="section-title">FSR Silicone Grippers</div>
+        <div class="media-wrap" style="height: 200px; flex-shrink: 0;">
+          <img src="assets/images/gripper-fsr-cad-annotated.jpg" alt="FSR gripper annotated CAD">
+        </div>
+        <ul style="margin-top:0.5rem;">
+          <li>Silicone fingertips cast around embedded FSR sensors</li>
+          <li>Closes until force threshold — consistent grasp across fabric weights</li>
+          <li>Larger contact patch than rigid 3D-printed fingers</li>
+        </ul>
+        <div class="media-wrap flex1">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/sew-unit-denim-pinch.mp4" type="video/mp4">
+          </video>
+        </div>
+        <p class="caption">Denim pinch with silicone FSR gripper</p>
+      </div>
+      <div class="gripper-col">
+        <div class="section-title">UMI-Inspired Teleop Gripper</div>
+        <div class="media-wrap flex1">
+          <video autoplay muted loop playsinline>
+            <source src="assets/videos/gripper-teleop-cad-spin.mp4" type="video/mp4">
+          </video>
+        </div>
+        <p class="caption">3D model spin — teleop gripper with ArUco box</p>
+        <ul style="margin-top:0.5rem;">
+          <li>ArUco markers for camera-based pose estimation</li>
+          <li>MPU6050 IMU for wrist orientation</li>
+          <li>Trigger → Arduino → SO-101 controller over serial</li>
+          <li>Synchronized at 30 Hz with sew unit cameras</li>
+        </ul>
+      </div>
+      <div class="gripper-col">
+        <div class="section-title">Design Iterations</div>
+        <div class="media-wrap" style="height:180px; flex-shrink:0;">
+          <img src="assets/images/gripper-teleop-cad-electronics.jpg" alt="Electronics layout">
+        </div>
+        <p class="caption">Electronics: Arduino, Pico, MPU6050</p>
+        <div class="media-wrap flex1">
+          <img src="assets/images/gripper-teleop-render-a.png" alt="Render">
+        </div>
+        <p class="caption">Final design render</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.deck -->
+
+<!-- ── Navigation ── -->
+<nav class="nav">
+  <button id="prev" title="Previous (←)">&#8592;</button>
+  <span class="counter" id="counter">1 / 5</span>
+  <button id="next" title="Next (→)">&#8594;</button>
+</nav>
+
+<div class="progress">
+  <div class="progress-bar" id="bar"></div>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let cur = 0;
+
+  function go(n) {
+    slides[cur].classList.remove('active');
+    cur = (n + total) % total;
+    slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = (cur + 1) + ' / ' + total;
+    document.getElementById('bar').style.width = ((cur + 1) / total * 100) + '%';
+    // restart videos on the active slide
+    slides[cur].querySelectorAll('video').forEach(v => { v.currentTime = 0; v.play(); });
+  }
+
+  document.getElementById('next').addEventListener('click', () => go(cur + 1));
+  document.getElementById('prev').addEventListener('click', () => go(cur - 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(cur + 1); }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); go(cur - 1); }
+  });
+
+  // init progress bar
+  document.getElementById('bar').style.width = (1 / total * 100) + '%';
+</script>
+
+</body>
+</html>

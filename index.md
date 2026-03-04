@@ -19,6 +19,8 @@ title: Tabitha Oanda
     <li><strong>Learning:</strong> cloth dynamics models trained and extended on data from my custom setup</li>
   </ul>
 
+  <p class="bio">A consistent theme in my research is taking methods developed in academic settings and adapting them to work on real cloth manipulation problems — the kind of contact-rich, deformable-object tasks that matter for industrial textile handling.</p>
+
 </div>
 
 <div class="hero-split">
