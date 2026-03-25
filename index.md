@@ -29,11 +29,49 @@ title: Tabitha Oanda
   </div>
   <div class="media-block">
     <video autoplay muted loop playsinline>
-      <source src="assets/videos/sew-unit-mirror-bimanual.mp4" type="video/mp4">
+      <source src="assets/videos/multi-fold.mp4" type="video/mp4">
     </video>
     <div class="media-caption">Real robot executing a planned bimanual cloth manipulation trajectory.</div>
   </div>
 </div>
+
+<p class="bio">
+  I'm a PhD researcher at Brown University advised by Professor Nora Ayanian. My work is on robotic cloth manipulation: building the hardware, perception, and learning systems needed to handle fabric reliably on real robots.
+</p>
+
+<h2 id="training">Policy Training</h2>
+
+<p class="bio">
+  In the longer videos, I'm resetting the cloth to different positions between folds to test whether the policy generalizes across initialization states. The shorter ones are single folds with no disturbance after completion. Right now, I'm experimenting with different image encoders (ResNet vs DINOv2) and pretrained action models — OpenVLA, Octo, and pi0. These videos are the baseline: no pretrained action model and simply ResNet18 (trained on ImageNet) for image encoding.
+</p>
+
+<div class="video-grid">
+  <div class="media-block">
+    <video autoplay muted loop playsinline>
+      <source src="assets/videos/multi-fold.mp4" type="video/mp4">
+    </video>
+    <div class="media-caption">Multi-fold sequence with cloth resets between folds.</div>
+  </div>
+  <div class="media-block">
+    <video autoplay muted loop playsinline>
+      <source src="assets/videos/single-fold.mp4" type="video/mp4">
+    </video>
+    <div class="media-caption">Single fold, no disturbance after completion.</div>
+  </div>
+</div>
+
+<p class="bio">
+  There's definitely more room for improvement via data collection, especially in generalizing recovery methods from various failure states and exploiting the best camera positioning and end effectors.
+</p>
+
+<p class="bio">
+  Happy to answer any other questions.
+</p>
+
+<p class="bio">
+  Best,<br>
+  Tabitha
+</p>
 
 <h2 id="projects">Projects</h2>
 
