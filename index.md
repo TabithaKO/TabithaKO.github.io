@@ -26,6 +26,7 @@ title: Tabitha Oanda
 <div class="hero-split">
   <div class="media-block">
     <img src="assets/images/sew-unit-hero.jpg" alt="Sew unit, dual SO-101 arms built from scratch at Brown">
+    <div class="media-caption">Initial assembly with leader arms for teleoperation.</div>
   </div>
   <div class="media-block">
     <video autoplay muted loop playsinline>
@@ -49,5 +50,30 @@ title: Tabitha Oanda
     <p>Ran PhysTwin and PGND on cloth data I collected, built the full perception and data pipeline, then explored whether adding visual supervision to dynamics training improves 3D predictions. Results are promising on individual fabrics; active research.</p>
     <span class="card-arrow">View project →</span>
   </a>
+</div>
 
+<h2 id="applied-research">Applied Research: Sew Unit</h2>
+
+<p class="bio">Most textile automation targets a single operation on a single fabric type. The Sew Unit is designed to be a general-purpose robotic worker for 3D textile assembly — bimanual manipulation, learned from human demonstrations, deployable where an operator stands today. The platform I built for research is the foundation for a system that learns new sewing operations without reprogramming.</p>
+
+<div class="image-row" style="grid-template-columns: 1fr 2fr;">
+  <div class="media-block">
+    <img src="assets/images/current-physical-setup.jpeg" alt="Current Sew Unit physical setup — bimanual SO-101 arms in aluminum frame">
+    <div class="media-caption">Current physical setup — approx. 24×20×18 in (prototype).</div>
+  </div>
+  <div class="media-block">
+    <img src="assets/images/sew-unit-vision.png" alt="Vision for Sew Unit deployment — human operator to robot operation">
+    <div class="media-caption">From human operator to autonomous deployment. <em>AI-generated concept.</em></div>
+  </div>
+</div>
+
+<div class="image-row">
+  <div class="media-block">
+    <img src="assets/images/sew-unit-jig.png" alt="Fitting textile panels into jigs — human operator vs robot operation">
+    <div class="media-caption">Fitting textile panels into jigs. <em>AI-generated concept.</em></div>
+  </div>
+  <div class="media-block">
+    <img src="assets/images/sew-unit-shoe.png" alt="Shoe upper sewing — human operator vs robot operation">
+    <div class="media-caption">Shoe upper sewing. <em>AI-generated concept.</em></div>
+  </div>
 </div>
