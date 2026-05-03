@@ -50,12 +50,6 @@ title: Tabitha Oanda
     <span class="card-arrow">View project →</span>
   </a>
 
-  <a class="project-card" href="projects/grippers">
-    <h3>Custom Grippers &amp; Teleop Tools</h3>
-    <p>Designed two custom end-effectors: silicone FSR grippers for contact-aware grasping, and a UMI-inspired handheld teleop gripper with ArUco markers and IMU for data collection.</p>
-    <span class="card-arrow">View project →</span>
-  </a>
-
   <a class="project-card" href="projects/policy-training">
     <h3>Policy Training</h3>
     <p>Training fold policies with ACT, comparing image encoders (ResNet vs DINOv2) and pretrained action models (OpenVLA, Octo, pi0). Baseline results and ongoing experiments.</p>

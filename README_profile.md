@@ -1,6 +1,6 @@
 ### Hi, I'm Tabby 👋
 
-I'm a PhD researcher at Brown University advised by [Professor Nora Ayanian](https://vivo.brown.edu/display/nayanian). My work is on robotic cloth manipulation: building the hardware, perception, and learning systems needed to handle fabric reliably on real robots.
+I'm a PhD researcher at Brown University. My work is on robotic cloth manipulation: building the hardware, perception, and learning systems needed to handle fabric reliably on real robots.
 
 ---
 
