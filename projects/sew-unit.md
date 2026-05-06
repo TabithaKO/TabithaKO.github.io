@@ -19,6 +19,19 @@ title: The Sew Unit
   </div>
 </div>
 
+<div class="media-block">
+  <img src="../assets/images/aruco-frame-000.jpg" alt="Stereo ArUco detection — gripper and table markers visible from both cameras">
+  <div class="media-caption">Stereo ArUco detection from two RealSense cameras. Green markers are mounted on handheld data collection grippers; orange markers on the table for calibration.</div>
+</div>
+
+<div class="media-block">
+  <img src="../assets/images/aruco-frame-001.jpg" alt="Stereo ArUco detection — gripper markers tracked during manipulation">
+</div>
+
+<div class="media-block">
+  <img src="../assets/images/aruco-frame-003.jpg" alt="Stereo ArUco detection — table calibration markers visible with cloth on workspace">
+</div>
+
 ---
 
 ## Hardware
