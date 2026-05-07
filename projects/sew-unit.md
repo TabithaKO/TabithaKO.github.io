@@ -13,13 +13,17 @@ title: The Sew Unit
 <div class="image-row">
   <div class="media-block light-bg">
     <img src="../assets/images/sew-unit-arms-front.png" alt="Sew unit arms close-up front view">
+    <div class="media-caption">Initial assembly: follower arms with silicone finger tips for execution and RealSense cameras mounted to the frame.</div>
   </div>
   <div class="media-block light-bg">
     <img src="../assets/images/sew-unit-arms-wide.png" alt="Sew unit wider angle showing both arms and frame">
+    <div class="media-caption">Leader arms for teleoperation.</div>
   </div>
 </div>
 
 ### Handheld Data Collection Grippers
+
+<p>Current setup containing handheld grippers for data collection within the cell. Stereo ArUco detection from two RealSense cameras. Green markers are mounted on handheld data collection grippers; orange markers on the table for calibration.</p>
 
 <div class="slideshow" id="aruco-slideshow">
   <div class="slide active">
@@ -119,7 +123,7 @@ ROS2 and MoveIt with custom URDF configurations. The inverted mounting orientati
 
 ---
 
-## Teleoperation & Data Collection
+## Teleoperation & Data Collection with Leader Arms
 
 The primary data collection method is leader-follower teleoperation. The leader arms share the same morphology as the follower arms, so joint angles map directly with no IK guessing. What you do with the leader is exactly what the follower does.
 
