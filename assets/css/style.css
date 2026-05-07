@@ -464,6 +464,61 @@ td {
   margin: 0;
 }
 
+/* === Slideshow === */
+.slideshow {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  margin: 1.5rem 0;
+}
+.slideshow .slide {
+  display: none;
+}
+.slideshow .slide.active {
+  display: block;
+}
+.slideshow .slide img {
+  width: 100%;
+  display: block;
+}
+.slideshow .slide .media-caption {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.slideshow > .media-caption {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.slideshow-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+.slideshow-controls button {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text);
+  transition: background 0.15s;
+}
+.slideshow-controls button:hover {
+  background: var(--border-light);
+}
+.slideshow-counter {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
 /* === Responsive === */
 @media (max-width: 640px) {
   h1 { font-size: 1.75rem; }

@@ -77,3 +77,22 @@ title: Tabitha Oanda
     <div class="media-caption">Shoe upper sewing. <em>AI-generated concept.</em></div>
   </div>
 </div>
+
+<h2 id="why-me">Why Me</h2>
+
+<p class="bio">I'm a fashion designer who has commissioned contract manufacturers and a robotics researcher who builds full stacks from scratch. I've visited garment factories, worked sewing lines, and understand the constraints of both the seamstress and the robotic arm. I cold-pitched my own robotics internship at New Balance because I was uniquely positioned at the intersection of these two worlds. That combination — domain access, hands-on manufacturing experience, and the technical ability to build the robots — is what makes this work possible.</p>
+
+<div class="image-row" style="grid-template-columns: repeat(3, 1fr);">
+  <div class="media-block photo">
+    <img src="assets/images/tabby-factory.jpeg" alt="Tabby visiting an apparel manufacturing factory in Kenya">
+    <div class="media-caption">Visiting an apparel factory in Kenya.</div>
+  </div>
+  <div class="media-block photo">
+    <img src="assets/images/tabby-franka.jpeg" alt="Tabby holding a handheld sewing machine against a Franka robot arm">
+    <div class="media-caption">With a Franka arm and a handheld sewing machine.</div>
+  </div>
+  <div class="media-block photo">
+    <img src="assets/images/tabby-grippers.jpeg" alt="Tabby using handheld grippers to manipulate cloth on the sewing machine inside the robot cell">
+    <div class="media-caption">Collecting sewing demonstrations with handheld grippers.</div>
+  </div>
+</div>

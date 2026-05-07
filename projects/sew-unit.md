@@ -19,18 +19,56 @@ title: The Sew Unit
   </div>
 </div>
 
-<div class="media-block">
-  <img src="../assets/images/aruco-frame-000.jpg" alt="Stereo ArUco detection — gripper and table markers visible from both cameras">
+### Handheld Data Collection Grippers
+
+<div class="slideshow" id="aruco-slideshow">
+  <div class="slide active">
+    <img src="../assets/images/aruco-frame-000.jpg" alt="Stereo ArUco detection — frame 0">
+  </div>
+  <div class="slide">
+    <img src="../assets/images/aruco-frame-001.jpg" alt="Stereo ArUco detection — frame 1">
+  </div>
+  <div class="slide">
+    <img src="../assets/images/aruco-frame-002.jpg" alt="Stereo ArUco detection — frame 2">
+  </div>
+  <div class="slide">
+    <img src="../assets/images/aruco-frame-003.jpg" alt="Stereo ArUco detection — frame 3">
+  </div>
   <div class="media-caption">Stereo ArUco detection from two RealSense cameras. Green markers are mounted on handheld data collection grippers; orange markers on the table for calibration.</div>
 </div>
-
-<div class="media-block">
-  <img src="../assets/images/aruco-frame-001.jpg" alt="Stereo ArUco detection — gripper markers tracked during manipulation">
+<div class="slideshow-controls">
+  <button onclick="changeSlide('aruco-slideshow', -1)">&#8592; Prev</button>
+  <span class="slideshow-counter" id="aruco-slideshow-counter">1 / 4</span>
+  <button onclick="changeSlide('aruco-slideshow', 1)">Next &#8594;</button>
 </div>
 
-<div class="media-block">
-  <img src="../assets/images/aruco-frame-003.jpg" alt="Stereo ArUco detection — table calibration markers visible with cloth on workspace">
+<script>
+function changeSlide(id, dir) {
+  var ss = document.getElementById(id);
+  var slides = ss.querySelectorAll('.slide');
+  var current = ss.querySelector('.slide.active');
+  var idx = Array.prototype.indexOf.call(slides, current);
+  current.classList.remove('active');
+  idx = (idx + dir + slides.length) % slides.length;
+  slides[idx].classList.add('active');
+  document.getElementById(id + '-counter').textContent = (idx + 1) + ' / ' + slides.length;
+}
+</script>
+
+### Sewing Machine + Robot Arms Setup
+
+<div class="image-row" style="grid-template-columns: repeat(3, 1fr);">
+  <div class="media-block">
+    <img src="../assets/images/tab-view-0.jpeg" alt="Sewing machine and robot arms — side view">
+  </div>
+  <div class="media-block">
+    <img src="../assets/images/tab-view-1.jpeg" alt="Sewing machine and robot arms — top view">
+  </div>
+  <div class="media-block">
+    <img src="../assets/images/tab-view-2.jpeg" alt="Sewing machine and robot arms — front view">
+  </div>
 </div>
+<div class="media-caption">Prototype sitting on my lab bench.</div>
 
 ---
 
