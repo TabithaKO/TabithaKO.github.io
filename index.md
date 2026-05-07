@@ -80,7 +80,7 @@ title: Tabitha Oanda
 
 <h2 id="why-me">Why Me</h2>
 
-<p class="bio">I'm a fashion designer who has commissioned contract manufacturers and a robotics researcher who builds full stacks from scratch. I've visited garment factories, worked sewing lines, and understand the constraints of both the seamstress and the robotic arm. I cold-pitched my own robotics internship at New Balance because I was uniquely positioned at the intersection of these two worlds. That combination — domain access, hands-on manufacturing experience, and the technical ability to build the robots — is what makes this work possible.</p>
+<p class="bio">I'm a fashion designer with direct experience commissioning contract manufacturers and a robotics researcher who builds full stacks from the ground up: mechanical design, fabrication, electronics, and machine learning.</p>
 
 <div class="image-row" style="grid-template-columns: repeat(3, 1fr);">
   <div class="media-block photo">
