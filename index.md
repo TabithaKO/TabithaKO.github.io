@@ -78,7 +78,7 @@ title: Tabitha Oanda
   </div>
 </div>
 
-<h2 id="why-me">Why Me?</h2>
+<h2 id="about-me">About Me</h2>
 
 <p class="bio">I'm a fashion designer with direct experience commissioning contract manufacturers and a robotics researcher who builds full stacks from the ground up: mechanical design, fabrication, electronics, and machine learning.</p>
 
