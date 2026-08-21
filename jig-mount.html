@@ -434,8 +434,9 @@ td.num, th.num {
     <h2>Some successful mounts</h2>
     <div class="video-wrap">
       <div class="video-mask">
-        <video id="grid-video" autoplay muted loop playsinline preload="auto"
-               src="/assets/videos/jig-mount-successes.mp4?v=3"></video>
+        <video id="grid-video" autoplay muted loop playsinline preload="metadata"
+               poster="/assets/images/jig-mount-successes-poster.jpg"
+               src="/assets/videos/jig-mount-successes.mp4?v=4"></video>
         <button id="tile-play" class="tile-btn tile-play" aria-label="Play or pause">▶</button>
         <button id="tile-prev" class="tile-btn tile-side tile-prev" aria-label="Previous clip">‹</button>
         <button id="tile-next" class="tile-btn tile-side tile-next" aria-label="Next clip">›</button>
@@ -467,8 +468,9 @@ td.num, th.num {
     <p class="dim">Four representative failure runs, cam 0 only. Speed adjusted so all four end at 60 s.</p>
     <div class="video-wrap" style="margin-bottom: 32px;">
       <div class="video-mask">
-        <video id="flops-video" autoplay muted loop playsinline preload="auto"
-               src="/assets/videos/jig-mount-flops.mp4?v=4"></video>
+        <video id="flops-video" autoplay muted loop playsinline preload="metadata"
+               poster="/assets/images/jig-mount-flops-poster.jpg"
+               src="/assets/videos/jig-mount-flops.mp4?v=5"></video>
         <button id="flops-play" class="tile-btn tile-play" aria-label="Play or pause">▶</button>
         <button id="flops-prev" class="tile-btn tile-side tile-prev" aria-label="Previous clip">‹</button>
         <button id="flops-next" class="tile-btn tile-side tile-next" aria-label="Next clip">›</button>
@@ -484,7 +486,8 @@ td.num, th.num {
     <h2>Live hardware inconsistency</h2>
     <p class="dim">A single monitored deploy run with per-joint tracking error overlaid live. The panel on the right shows, for each of the six joints on both arms, how far the actual servo position is from what the policy commanded — updated every frame. <strong style="color: #85e09b">Green &lt; 3°</strong>, <strong style="color: #f0c266">amber 3–10°</strong>, <strong style="color: #ff7573">red &gt; 10°</strong>. The <strong>+</strong> sign means the servo overshot; <strong>−</strong> means it undershot. Watch the right column — the elbow peaks at <strong>45°</strong> of undershoot mid-run, the pan holds a steady 20–30° gap, and the gripper stays red almost throughout. The left arm stays mostly green: the arms are asymmetrically degraded, and that asymmetry is the story of the current success rate.</p>
     <div class="video-wrap" style="margin-bottom: 32px;">
-      <video id="annotated-video" autoplay muted loop playsinline preload="auto">
+      <video id="annotated-video" autoplay muted loop playsinline preload="metadata"
+             poster="/assets/images/jig-mount-hardware-poster.jpg">
         <source src="/assets/videos/jig-mount-hardware-inconsistency.mp4" type="video/mp4">
       </video>
       <div class="video-caption">
