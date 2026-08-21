@@ -1,0 +1,575 @@
+<title>Jig Mount — Factory Status 2026-08-20</title>
+<style>
+:root {
+  --bg: #0d1116;
+  --surface: #171c22;
+  --surface-2: #1f262d;
+  --border: #2e3742;
+  --text: #ffffff;
+  --text-dim: #c8ced5;
+  --text-mid: #e0e5eb;
+  --accent: #f5b862;
+  --good: #85e09b;
+  --bad:  #ff7573;
+  --warn: #f0c266;
+  --grid-line: #2e3742;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f2f5f8;
+    --surface: #ffffff;
+    --surface-2: #f7f9fb;
+    --border: #dde3e9;
+    --text: #14181c;
+    --text-dim: #5a636b;
+    --text-mid: #38414a;
+    --accent: #b06810;
+    --good: #2b8a4a;
+    --bad:  #b8302e;
+    --warn: #a67418;
+    --grid-line: #e2e7ec;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1116; --surface: #171c22; --surface-2: #1f262d; --border: #2e3742;
+  --text: #ffffff; --text-dim: #c8ced5; --text-mid: #e0e5eb;
+  --accent: #f5b862; --good: #85e09b; --bad: #ff7573; --warn: #f0c266; --grid-line: #2e3742;
+}
+:root[data-theme="light"] {
+  --bg: #f2f5f8; --surface: #ffffff; --surface-2: #f7f9fb; --border: #dde3e9;
+  --text: #14181c; --text-dim: #5a636b; --text-mid: #38414a;
+  --accent: #b06810; --good: #2b8a4a; --bad: #b8302e; --warn: #a67418; --grid-line: #e2e7ec;
+}
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.6; font-size: 17px;
+}
+.mono {
+  font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+main {
+  max-width: 1440px; margin: 0 auto; padding: 48px 40px 96px;
+}
+.full-bleed {
+  width: min(96vw, 1900px);
+  margin-left: 50%; transform: translateX(-50%);
+}
+.full-bleed video { max-height: 82vh; object-fit: contain; background: #000; }
+header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 24px; padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+h1 {
+  margin: 0; font-size: 34px; font-weight: 600; letter-spacing: -0.01em;
+  text-wrap: balance; color: var(--text);
+}
+.eyebrow {
+  text-transform: uppercase; letter-spacing: 0.08em; font-size: 13px;
+  color: var(--text-mid); font-weight: 700; margin-bottom: 8px;
+}
+.date { color: var(--text-mid); font-size: 15px; }
+section { margin-top: 56px; }
+h2 {
+  font-size: 24px; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--text);
+  margin: 0 0 28px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+h3 {
+  font-size: 18px; font-weight: 600; margin: 0 0 14px;
+  color: var(--text);
+}
+p { margin: 0 0 14px; color: var(--text); }
+.dim { color: var(--text-dim); }
+
+/* Video card */
+.video-wrap {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px; padding: 12px; overflow: hidden;
+}
+.video-mask { position: relative; }
+video {
+  width: 100%; height: auto; display: block; border-radius: 2px;
+  background: #000;
+}
+/* Mobile-only controls, hidden on desktop */
+.tile-btn { display: none; }
+.tile-count { display: none; }
+.video-caption {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 12px; padding: 0 2px;
+  font-size: 16px; color: var(--text-mid);
+}
+.video-caption .tag {
+  color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* Stat cards */
+.stat-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  margin-bottom: 20px;
+}
+.stat {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 16px 18px; border-radius: 4px;
+}
+.stat .label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-dim); font-weight: 600;
+}
+.stat .value {
+  font-size: 28px; margin-top: 4px; color: var(--accent);
+  font-weight: 500;
+}
+.stat .sub {
+  font-size: 12px; color: var(--text-dim); margin-top: 2px;
+}
+
+/* Table */
+.highlight-stat {
+  margin-top: 24px;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1.4;
+  padding: 20px 24px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-left: 4px solid var(--accent);
+  border-radius: 2px;
+}
+table {
+  width: 100%; border-collapse: collapse;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px; overflow: hidden;
+  font-size: 16px;
+}
+th, td {
+  padding: 14px 18px; text-align: left;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+th {
+  background: var(--surface-2); font-size: 13px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-mid);
+}
+tbody tr:last-child td { border-bottom: none; }
+td.num, th.num {
+  text-align: right; font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* Fidelity: two columns of L | R side-by-side */
+.arms {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+.arm-card {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 20px; border-radius: 4px;
+}
+.arm-card h3 {
+  font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  font-size: 16px; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--text); margin-bottom: 18px; display: flex;
+  align-items: center; gap: 12px; font-weight: 700;
+}
+.arm-card h3 .health {
+  padding: 4px 10px; border-radius: 2px; font-size: 12px;
+  letter-spacing: 0.08em; font-weight: 700;
+}
+.arm-card h3 .health.ok  { background: color-mix(in srgb, var(--good) 20%, transparent); color: var(--good); }
+.arm-card h3 .health.bad { background: color-mix(in srgb, var(--bad) 20%, transparent); color: var(--bad); }
+
+.joint-row {
+  display: grid; grid-template-columns: 74px 1fr 130px;
+  align-items: center; gap: 12px;
+  padding: 8px 0; font-size: 15px;
+}
+.joint-row .val .sep { color: var(--text-dim); margin: 0 4px; font-weight: 400; }
+.joint-row .val .max { color: var(--text-mid); font-weight: 600; }
+.joint-row.flag .val .max { color: var(--bad); }
+.joint-row-header {
+  display: grid; grid-template-columns: 74px 1fr 130px;
+  gap: 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-mid); font-weight: 700; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border); margin-bottom: 6px;
+}
+.joint-row-header .h-val { text-align: right; }
+.joint-row .name {
+  font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  color: var(--text); font-size: 14px; font-weight: 600;
+}
+.joint-row .bar {
+  height: 8px; background: var(--surface-2); border-radius: 2px;
+  position: relative; overflow: hidden;
+}
+.joint-row .bar .fill {
+  position: absolute; top: 0; left: 0; height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.joint-row .val {
+  text-align: right; font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  font-size: 15px; color: var(--text); font-weight: 600;
+}
+.joint-row.flag .val { color: var(--bad); font-weight: 700; }
+.joint-row.flag .fill { background: var(--bad); }
+
+/* Mean marker inside the range bar */
+.joint-row .bar { position: relative; }
+.joint-row .mean-mark {
+  position: absolute; top: -3px; bottom: -3px;
+  width: 3px; background: rgba(255, 255, 255, 0.95);
+  border-radius: 2px;
+  transform: translateX(-1px);
+}
+.joint-row.flag .mean-mark { background: #ffe0e0; }
+
+.arm-note {
+  font-size: 16px; color: var(--text-mid); margin-top: 18px;
+  padding-top: 14px; border-top: 1px solid var(--border);
+  line-height: 1.6;
+}
+.arm-note strong { color: var(--text); }
+
+/* Match plot */
+.match-plot {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 20px; border-radius: 4px; margin-top: 16px;
+}
+.match-plot h3 {
+  font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--text-mid); margin-bottom: 4px;
+}
+.match-plot .plot-sub {
+  font-size: 12px; color: var(--text-dim); margin-bottom: 14px;
+}
+.plot-svg { width: 100%; height: 220px; display: block; }
+.plot-legend {
+  display: flex; gap: 20px; font-size: 12px; margin-top: 10px;
+  color: var(--text-dim);
+}
+.plot-legend .swatch {
+  display: inline-block; width: 14px; height: 3px; margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* Todo list */
+.todo-list { list-style: none; padding: 0; margin: 0; }
+.todo-list li {
+  display: grid; grid-template-columns: auto 1fr;
+  gap: 18px; padding: 18px 20px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px; margin-bottom: 12px;
+  align-items: baseline;
+}
+.chip {
+  padding: 5px 12px; border-radius: 2px; font-size: 12px;
+  letter-spacing: 0.08em; font-weight: 700; text-transform: uppercase;
+  font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+.chip.critical { background: color-mix(in srgb, var(--bad) 28%, transparent); color: #ffdadd; }
+.chip.high     { background: color-mix(in srgb, var(--warn) 30%, transparent); color: #fce6b8; }
+.chip.med      { background: color-mix(in srgb, var(--accent) 28%, transparent); color: #ffe0b8; }
+.chip.low      { background: color-mix(in srgb, var(--text-mid) 22%, transparent); color: var(--text); }
+.todo-body strong { color: var(--text); font-weight: 700; font-size: 17px; }
+.todo-body small { color: var(--text-mid); font-size: 16px; display: block; margin-top: 6px; line-height: 1.55; }
+.todo-body .point + .point { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+
+/* Joint-health mini table inside the blocker card */
+.joint-health-table { margin-top: 16px; font-size: 14px; }
+.joint-health-table th, .joint-health-table td { padding: 9px 12px; }
+.joint-health-table .ok   { color: #85e09b; }
+.joint-health-table .warn { color: #f0c266; }
+.joint-health-table .bad  { color: #ff7573; }
+.jh-caption { display: block; margin-top: 10px; font-size: 13px; color: var(--text-mid); }
+.jh-caption .ok   { color: #85e09b; }
+.jh-caption .warn { color: #f0c266; }
+.jh-caption .bad  { color: #ff7573; }
+.todo-eta { font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+             font-size: 14px; color: var(--text-mid); font-weight: 600; }
+
+@media (max-width: 720px) {
+  main { padding: 32px 0 96px; }
+  main > header,
+  main > section > *:not(.video-wrap) { padding-left: 20px; padding-right: 20px; }
+  main > section > h2 { padding-left: 20px; padding-right: 20px; }
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+  .arms { grid-template-columns: 1fr; }
+  header { flex-direction: column; gap: 6px; }
+  .video-wrap { padding: 0; border-radius: 0; border-left: 0; border-right: 0; }
+  .video-caption { padding: 10px 20px 4px; }
+  body { font-size: 16px; }
+  h1 { font-size: 28px; }
+  h2 { font-size: 20px; }
+
+  /* Throughput table: shrink to fit narrow screens without horizontal scroll */
+  table { font-size: 13px; table-layout: fixed; }
+  th, td { padding: 10px 6px; }
+  th {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+  }
+  th.num, td.num {
+    font-size: 13px;
+    padding-left: 4px; padding-right: 4px;
+  }
+  /* Percent parenthetical drops to its own line to keep each column narrow */
+  th .pct { display: block; font-size: 10px; opacity: 0.7; margin-top: 2px; }
+
+  /* Single-tile mobile viewer: crop to one 160x120 tile of the 6x5 grid */
+  .video-mask {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #000;
+  }
+  .video-mask video {
+    position: absolute; top: 0; left: 0;
+    width: 600%; height: 500%;
+    transform: translate(var(--tx, 0%), var(--ty, 0%));
+    transition: transform 220ms ease;
+  }
+
+  /* Show mobile controls */
+  .tile-btn { display: flex; align-items: center; justify-content: center;
+    position: absolute; z-index: 2;
+    background: rgba(20, 24, 28, 0.72); color: #fff;
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    font-family: ui-sans-serif, sans-serif;
+    cursor: pointer; user-select: none;
+    transition: opacity 180ms ease, transform 120ms ease;
+  }
+  .tile-btn:active { transform: scale(0.94); }
+  .tile-side {
+    top: 50%; transform: translateY(-50%);
+    width: 46px; height: 46px; border-radius: 50%;
+    font-size: 28px; line-height: 1; padding-bottom: 4px;
+  }
+  .tile-prev { left: 12px; }
+  .tile-next { right: 12px; }
+  .tile-play {
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 72px; height: 72px; border-radius: 50%;
+    font-size: 28px;
+    opacity: 0.55;  /* always visible; more prominent when paused */
+    pointer-events: auto;
+  }
+  .tile-play:active { transform: translate(-50%, -50%) scale(0.94); }
+  .video-mask.is-paused .tile-play {
+    opacity: 1;
+    box-shadow: 0 0 0 4px rgba(240, 184, 98, 0.35);
+  }
+  .tile-count {
+    display: block;
+    position: absolute; z-index: 2;
+    bottom: 12px; left: 50%; transform: translateX(-50%);
+    padding: 4px 12px; border-radius: 999px;
+    background: rgba(20,24,28,0.72); color: #fff;
+    font-family: ui-monospace, monospace; font-size: 13px;
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  }
+}
+</style>
+
+<main>
+  <header>
+    <div>
+      <div class="eyebrow">Robot jig mount operation</div>
+      <h1>Factory status — 2026-08-20</h1>
+    </div>
+  </header>
+
+  <section>
+    <h2>Some successful mounts</h2>
+    <div class="video-wrap">
+      <div class="video-mask">
+        <video id="grid-video" autoplay muted loop playsinline preload="auto">
+          <source src="/assets/videos/jig-mount-successes.mp4" type="video/mp4">
+        </video>
+        <button id="tile-play" class="tile-btn tile-play" aria-label="Play or pause">▶</button>
+        <button id="tile-prev" class="tile-btn tile-side tile-prev" aria-label="Previous clip">‹</button>
+        <button id="tile-next" class="tile-btn tile-side tile-next" aria-label="Next clip">›</button>
+        <div id="tile-count" class="tile-count">1 / 30</div>
+      </div>
+      <div class="video-caption">
+        <span>1x speed, shorter clips loop · a <span style="display:inline-block;width:14px;height:14px;background:#ff5555;border-radius:2px;vertical-align:-2px;margin:0 3px"></span> in a tile's top-right marks a clip longer than 60 s that was sped up to fit — those are clustered in the right two columns for easy comparison</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Success projection with reset arm</h2>
+    <p class="dim">Assumes ~45 s per attempt (30 s policy + 15 s reset). A dedicated reset arm removes the human bottleneck between attempts — sustained autonomous cycles become possible. The <strong>left column</strong> is the honest expected value at today's average success rate — the time this rig would take to accumulate that many successes at the rate we actually measured today. The <strong>right column</strong> is the fastest execution: the same rig operating at its best-run success rate (50%), showing what's possible when the hardware and policy align.</p>
+    <table>
+      <thead>
+        <tr><th>Target</th><th class="num">Observed <span class="pct">avg @ 35%</span></th><th class="num">Best run <span class="pct">fastest @ 50%</span></th></tr>
+      </thead>
+      <tbody>
+        <tr><td>100 successes</td><td class="num" style="color:var(--good)">3.6 h</td><td class="num">2.5 h</td></tr>
+        <tr><td>150 successes</td><td class="num" style="color:var(--good)">5.4 h</td><td class="num">3.8 h</td></tr>
+        <tr><td>300 successes</td><td class="num" style="color:var(--good)">10.7 h</td><td class="num">7.5 h</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Flops — the failure modes</h2>
+    <p class="dim">Four representative failure runs, cam 0 only. Speed adjusted so all four end at 60 s.</p>
+    <div class="video-wrap" style="margin-bottom: 32px;">
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="/assets/videos/jig-mount-flops.mp4" type="video/mp4">
+      </video>
+      <div class="video-caption">
+        <span>left to right — <strong>chronic</strong>: whole right arm off target for the entire run · <strong>stall</strong>: right elbow freezes for ~5 s mid-mount, then breaks stiction with a lurch · <strong>drastic</strong>: right elbow peaks at 45° off · <strong>thermal</strong>: multiple joints cross their thermal spec, one servo hit 109 °C in this run</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Live hardware inconsistency</h2>
+    <p class="dim">A single monitored deploy run with per-joint tracking error overlaid live. The panel on the right shows, for each of the six joints on both arms, how far the actual servo position is from what the policy commanded — updated every frame. <strong style="color: #85e09b">Green &lt; 3°</strong>, <strong style="color: #f0c266">amber 3–10°</strong>, <strong style="color: #ff7573">red &gt; 10°</strong>. The <strong>+</strong> sign means the servo overshot; <strong>−</strong> means it undershot. Watch the right column — the elbow peaks at <strong>45°</strong> of undershoot mid-run, the pan holds a steady 20–30° gap, and the gripper stays red almost throughout. The left arm stays mostly green: the arms are asymmetrically degraded, and that asymmetry is the story of the current success rate.</p>
+    <div class="video-wrap" style="margin-bottom: 32px;">
+      <video id="annotated-video" autoplay muted loop playsinline preload="auto">
+        <source src="/assets/videos/jig-mount-hardware-inconsistency.mp4" type="video/mp4">
+      </video>
+      <div class="video-caption">
+        <span>real-time servo tracking · supply voltage dips to 11.6 V under load (from a nominal 12.5 V), so power stress compounds the tracking errors on the degraded joints</span>
+      </div>
+    </div>
+
+  </section>
+
+  <section>
+    <h2>To dos</h2>
+    <ul class="todo-list">
+      <li>
+        <span class="chip critical">Hardware</span>
+        <div class="todo-body">
+          <strong>Restore both arms to spec</strong>
+          <small>What started as a single degraded joint has widened. Across the development cycle, only 4 of 12 joints still hold precision. A servo refresh on both arms — priority on the right pan / wrist-flex / wrist-roll and cooling for the left elbow — is the single largest lift for success rates.</small>
+
+          <table class="joint-health-table">
+            <thead>
+              <tr>
+                <th>Joint</th>
+                <th class="num">Left arm — typical&nbsp;/&nbsp;worst 10%</th>
+                <th class="num">Right arm — typical&nbsp;/&nbsp;worst 10%</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>pan</td>   <td class="num ok">5.2°&nbsp;/&nbsp;6.8° ✅</td>  <td class="num bad">25°&nbsp;/&nbsp;45° 🚨</td></tr>
+              <tr><td>lift</td>  <td class="num ok">5.5°&nbsp;/&nbsp;6.6° ✅</td>  <td class="num warn">11°&nbsp;/&nbsp;15° ⚠</td></tr>
+              <tr><td>elbow</td> <td class="num ok">5.3°&nbsp;/&nbsp;7.7° ✅</td>  <td class="num bad">19°&nbsp;/&nbsp;26° 🚨</td></tr>
+              <tr><td>wflex</td> <td class="num bad">15°&nbsp;/&nbsp;17° 🚨</td>   <td class="num bad">27°&nbsp;/&nbsp;30° 🚨</td></tr>
+              <tr><td>wroll</td> <td class="num ok">4.6°&nbsp;/&nbsp;6.7° ✅</td>  <td class="num bad">20°&nbsp;/&nbsp;23° 🚨</td></tr>
+              <tr><td>grip</td>  <td class="num warn">13°&nbsp;/&nbsp;15° ⚠</td>   <td class="num bad">17°&nbsp;/&nbsp;30° 🚨</td></tr>
+            </tbody>
+          </table>
+          <small class="jh-caption">Peak follow-error per joint over the development cycle. <span class="ok">✅ within 5°</span> · <span class="warn">⚠ 5–15°</span> · <span class="bad">🚨 &gt; 15°</span></small>
+        </div>
+      </li>
+      <li>
+        <span class="chip med">Options</span>
+        <div class="todo-body">
+          <div class="point">
+            <strong>Better observability at the grasp point</strong>
+            <small>Right now we have limited visibility into what the robot is looking at during the critical grasp instant — the difference between "policy chose the wrong target" and "servo missed the target" can be hard to separate from external cameras alone. Adding a dedicated close-in view (or on-wrist camera) at the grasp point turns a diagnostic guess into evidence, so every failure gets categorized correctly and the fixes stack in the right order.</small>
+          </div>
+          <div class="point">
+            <strong>Tactile sensing at the fingertips</strong>
+            <small>The current servos give a rough load estimate, but nothing that reliably distinguishes "gripper closed on fabric" from "gripper closed on air" at the moment of grasp. A dedicated tactile sensor at each fingertip turns that guess into a signal the policy can act on. Without it, one of the leading grasp failure modes is invisible to the robot until it tries to lift and the cloth isn't there.</small>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </section>
+</main>
+
+<script>
+(function() {
+  var v = document.getElementById('grid-video');
+  if (!v) return;
+  var mask = v.parentElement;
+
+  // ---- Auto-resume on tab visibility / focus. Respects manual pause. ----
+  var userPaused = false;
+  function tryPlay() {
+    if (userPaused) return;
+    if (v.paused) {
+      var p = v.play();
+      if (p && p.catch) p.catch(function(){});
+    }
+  }
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') tryPlay();
+  });
+  window.addEventListener('focus', tryPlay);
+  window.addEventListener('pageshow', tryPlay);
+
+  // ---- Reflect play/pause state (drives play button styling + icon) ----
+  var playBtn = document.getElementById('tile-play');
+  function reflect() {
+    mask.classList.toggle('is-paused', v.paused);
+    if (playBtn) playBtn.textContent = v.paused ? '▶' : '⏸';
+  }
+  v.addEventListener('play', reflect);
+  v.addEventListener('pause', reflect);
+  reflect();
+
+  // If autoplay was blocked by the browser, the video will be paused at load.
+  // Reflect this immediately so the play button is prominent.
+  v.addEventListener('loadedmetadata', reflect);
+  v.addEventListener('canplay', function() {
+    reflect();
+    // Best-effort attempt to start playing on first canplay (some mobile browsers
+    // won't have started autoplay by this point).
+    if (!userPaused && v.paused) {
+      var p = v.play(); if (p && p.catch) p.catch(function(){});
+    }
+  });
+
+  // ---- Mobile tile navigation (6x5 grid → cycle through all 30 tiles) ----
+  // Video is scaled 600% wide × 500% tall inside the container.
+  var N_COLS = 6, N_ROWS = 5, N = 30;
+  var SHIFT_X = 100 / N_COLS;   // 16.667
+  var SHIFT_Y = 100 / N_ROWS;   // 20
+  var idx = 0;
+  function apply() {
+    var col = idx % N_COLS, row = Math.floor(idx / N_COLS);
+    v.style.setProperty('--tx', (-col * SHIFT_X) + '%');
+    v.style.setProperty('--ty', (-row * SHIFT_Y) + '%');
+    document.getElementById('tile-count').textContent = (idx + 1) + ' / ' + N;
+  }
+  apply();
+
+  function jumpToStart() {
+    // Reset the underlying video to t=0 so the new tile starts from its beginning.
+    try { v.currentTime = 0; } catch (e) {}
+    userPaused = false;
+    var p = v.play(); if (p && p.catch) p.catch(function(){});
+  }
+  document.getElementById('tile-prev').addEventListener('click', function() {
+    idx = (idx - 1 + N) % N; apply(); jumpToStart();
+  });
+  document.getElementById('tile-next').addEventListener('click', function() {
+    idx = (idx + 1) % N; apply(); jumpToStart();
+  });
+  document.getElementById('tile-play').addEventListener('click', function() {
+    if (v.paused) { userPaused = false; v.play(); }
+    else          { userPaused = true;  v.pause(); }
+  });
+  // Tap the video itself to toggle play/pause (mobile UX)
+  mask.addEventListener('click', function(e) {
+    if (e.target.tagName === 'BUTTON') return;
+    if (v.paused) { userPaused = false; v.play(); }
+    else          { userPaused = true;  v.pause(); }
+  });
+})();
+</script>
