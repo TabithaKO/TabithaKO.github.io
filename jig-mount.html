@@ -1,3 +1,4 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jig Mount — Factory Status 2026-08-20</title>
 <style>
 :root {
@@ -302,10 +303,14 @@ td.num, th.num {
   .arms { grid-template-columns: 1fr; }
   header { flex-direction: column; gap: 6px; }
   .video-wrap { padding: 0; border-radius: 0; border-left: 0; border-right: 0; }
-  .video-caption { padding: 10px 20px 4px; }
-  body { font-size: 16px; }
-  h1 { font-size: 28px; }
-  h2 { font-size: 20px; }
+  .video-caption { padding: 10px 20px 4px; font-size: 13px; line-height: 1.5; }
+  body { font-size: 15px; }
+  h1 { font-size: 24px; }
+  h2 { font-size: 18px; }
+  main > section > .dim { font-size: 14px; line-height: 1.55; }
+  .todo-body strong { font-size: 15px; }
+  .todo-body small { font-size: 14px; line-height: 1.5; }
+  .eyebrow { font-size: 11px; }
 
   /* Throughput table: shrink to fit narrow screens without horizontal scroll */
   table { font-size: 13px; table-layout: fixed; }
@@ -322,17 +327,56 @@ td.num, th.num {
   /* Percent parenthetical drops to its own line to keep each column narrow */
   th .pct { display: block; font-size: 10px; opacity: 0.7; margin-top: 2px; }
 
-  /* Single-tile mobile viewer: crop to one 160x120 tile of the 6x5 grid */
+  /* Joint-health table: tighter on mobile, drop the "/worst 10%" per cell to fit */
+  .joint-health-table { font-size: 13px; margin-top: 12px; table-layout: fixed; }
+  .joint-health-table th, .joint-health-table td { padding: 8px 6px; }
+  .joint-health-table th { font-size: 11px; }
+  .joint-health-table th.num, .joint-health-table td.num { font-size: 13px; padding: 8px 6px; }
+  .joint-health-table .jh-sub { display: none; }
+  .joint-health-table .jh-worst { display: none; }
+  /* Give more space to the two value columns, less to the joint label column */
+  .joint-health-table col:first-child,
+  .joint-health-table th:first-child,
+  .joint-health-table td:first-child { width: 26%; }
+  .jh-caption { font-size: 11px; }
+
+  /* Todo card: stack chip on top so text isn't squished into a narrow column */
+  .todo-list li {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 16px 18px;
+  }
+  .todo-list .chip { justify-self: start; }
+
+  /* Success-projection table: wider target column, center-align values under their headers */
+  section table:not(.joint-health-table) { table-layout: fixed; }
+  section table:not(.joint-health-table) th:first-child,
+  section table:not(.joint-health-table) td:first-child { width: 44%; }
+  section table:not(.joint-health-table) th.num,
+  section table:not(.joint-health-table) td.num {
+    width: 28%; text-align: center; padding: 8px 4px;
+  }
+
+  /* Mobile carousel: crop one tile out of the single stitched video */
   .video-mask {
     aspect-ratio: 4 / 3;
     overflow: hidden;
     background: #000;
+    position: relative;
   }
   .video-mask video {
     position: absolute; top: 0; left: 0;
+    transition: transform 220ms ease;
+  }
+  /* Successes: 6 cols × 5 rows → video scaled 600% × 500% */
+  #grid-video {
     width: 600%; height: 500%;
     transform: translate(var(--tx, 0%), var(--ty, 0%));
-    transition: transform 220ms ease;
+  }
+  /* Flops: 4 cols × 1 row → video scaled 400% × 100% */
+  #flops-video {
+    width: 400%; height: 100%;
+    transform: translate(var(--tx, 0%), 0%);
   }
 
   /* Show mobile controls */
@@ -390,9 +434,8 @@ td.num, th.num {
     <h2>Some successful mounts</h2>
     <div class="video-wrap">
       <div class="video-mask">
-        <video id="grid-video" autoplay muted loop playsinline preload="auto">
-          <source src="/assets/videos/jig-mount-successes.mp4" type="video/mp4">
-        </video>
+        <video id="grid-video" autoplay muted loop playsinline preload="auto"
+               src="/assets/videos/jig-mount-successes.mp4?v=3"></video>
         <button id="tile-play" class="tile-btn tile-play" aria-label="Play or pause">▶</button>
         <button id="tile-prev" class="tile-btn tile-side tile-prev" aria-label="Previous clip">‹</button>
         <button id="tile-next" class="tile-btn tile-side tile-next" aria-label="Next clip">›</button>
@@ -423,9 +466,14 @@ td.num, th.num {
     <h2>Flops — the failure modes</h2>
     <p class="dim">Four representative failure runs, cam 0 only. Speed adjusted so all four end at 60 s.</p>
     <div class="video-wrap" style="margin-bottom: 32px;">
-      <video autoplay muted loop playsinline preload="auto">
-        <source src="/assets/videos/jig-mount-flops.mp4" type="video/mp4">
-      </video>
+      <div class="video-mask">
+        <video id="flops-video" autoplay muted loop playsinline preload="auto"
+               src="/assets/videos/jig-mount-flops.mp4?v=4"></video>
+        <button id="flops-play" class="tile-btn tile-play" aria-label="Play or pause">▶</button>
+        <button id="flops-prev" class="tile-btn tile-side tile-prev" aria-label="Previous clip">‹</button>
+        <button id="flops-next" class="tile-btn tile-side tile-next" aria-label="Next clip">›</button>
+        <div id="flops-count" class="tile-count">1 / 4</div>
+      </div>
       <div class="video-caption">
         <span>left to right — <strong>chronic</strong>: whole right arm off target for the entire run · <strong>stall</strong>: right elbow freezes for ~5 s mid-mount, then breaks stiction with a lurch · <strong>drastic</strong>: right elbow peaks at 45° off · <strong>thermal</strong>: multiple joints cross their thermal spec, one servo hit 109 °C in this run</span>
       </div>
@@ -459,17 +507,17 @@ td.num, th.num {
             <thead>
               <tr>
                 <th>Joint</th>
-                <th class="num">Left arm — typical&nbsp;/&nbsp;worst 10%</th>
-                <th class="num">Right arm — typical&nbsp;/&nbsp;worst 10%</th>
+                <th class="num">Left arm<span class="jh-sub"> — typical&nbsp;/&nbsp;worst 10%</span></th>
+                <th class="num">Right arm<span class="jh-sub"> — typical&nbsp;/&nbsp;worst 10%</span></th>
               </tr>
             </thead>
             <tbody>
-              <tr><td>pan</td>   <td class="num ok">5.2°&nbsp;/&nbsp;6.8° ✅</td>  <td class="num bad">25°&nbsp;/&nbsp;45° 🚨</td></tr>
-              <tr><td>lift</td>  <td class="num ok">5.5°&nbsp;/&nbsp;6.6° ✅</td>  <td class="num warn">11°&nbsp;/&nbsp;15° ⚠</td></tr>
-              <tr><td>elbow</td> <td class="num ok">5.3°&nbsp;/&nbsp;7.7° ✅</td>  <td class="num bad">19°&nbsp;/&nbsp;26° 🚨</td></tr>
-              <tr><td>wflex</td> <td class="num bad">15°&nbsp;/&nbsp;17° 🚨</td>   <td class="num bad">27°&nbsp;/&nbsp;30° 🚨</td></tr>
-              <tr><td>wroll</td> <td class="num ok">4.6°&nbsp;/&nbsp;6.7° ✅</td>  <td class="num bad">20°&nbsp;/&nbsp;23° 🚨</td></tr>
-              <tr><td>grip</td>  <td class="num warn">13°&nbsp;/&nbsp;15° ⚠</td>   <td class="num bad">17°&nbsp;/&nbsp;30° 🚨</td></tr>
+              <tr><td>pan</td>   <td class="num ok">5.2°<span class="jh-worst">&nbsp;/&nbsp;6.8°</span> ✅</td>  <td class="num bad">25°<span class="jh-worst">&nbsp;/&nbsp;45°</span> 🚨</td></tr>
+              <tr><td>lift</td>  <td class="num ok">5.5°<span class="jh-worst">&nbsp;/&nbsp;6.6°</span> ✅</td>  <td class="num warn">11°<span class="jh-worst">&nbsp;/&nbsp;15°</span> ⚠</td></tr>
+              <tr><td>elbow</td> <td class="num ok">5.3°<span class="jh-worst">&nbsp;/&nbsp;7.7°</span> ✅</td>  <td class="num bad">19°<span class="jh-worst">&nbsp;/&nbsp;26°</span> 🚨</td></tr>
+              <tr><td>wflex</td> <td class="num bad">15°<span class="jh-worst">&nbsp;/&nbsp;17°</span> 🚨</td>   <td class="num bad">27°<span class="jh-worst">&nbsp;/&nbsp;30°</span> 🚨</td></tr>
+              <tr><td>wroll</td> <td class="num ok">4.6°<span class="jh-worst">&nbsp;/&nbsp;6.7°</span> ✅</td>  <td class="num bad">20°<span class="jh-worst">&nbsp;/&nbsp;23°</span> 🚨</td></tr>
+              <tr><td>grip</td>  <td class="num warn">13°<span class="jh-worst">&nbsp;/&nbsp;15°</span> ⚠</td>   <td class="num bad">17°<span class="jh-worst">&nbsp;/&nbsp;30°</span> 🚨</td></tr>
             </tbody>
           </table>
           <small class="jh-caption">Peak follow-error per joint over the development cycle. <span class="ok">✅ within 5°</span> · <span class="warn">⚠ 5–15°</span> · <span class="bad">🚨 &gt; 15°</span></small>
@@ -494,82 +542,83 @@ td.num, th.num {
 
 <script>
 (function() {
-  var v = document.getElementById('grid-video');
-  if (!v) return;
-  var mask = v.parentElement;
+  function initCarousel(cfg) {
+    var v = document.getElementById(cfg.videoId);
+    if (!v) return;
+    var mask  = v.parentElement;
+    var play  = document.getElementById(cfg.playBtnId);
+    var prev  = document.getElementById(cfg.prevBtnId);
+    var next  = document.getElementById(cfg.nextBtnId);
+    var count = document.getElementById(cfg.countId);
+    var idx = 0;
+    var userPaused = false;
 
-  // ---- Auto-resume on tab visibility / focus. Respects manual pause. ----
-  var userPaused = false;
-  function tryPlay() {
-    if (userPaused) return;
-    if (v.paused) {
-      var p = v.play();
-      if (p && p.catch) p.catch(function(){});
+    var SHIFT_X = 100 / cfg.cols;
+    var SHIFT_Y = cfg.rows > 1 ? 100 / cfg.rows : 0;
+
+    function apply() {
+      var col = idx % cfg.cols;
+      var row = Math.floor(idx / cfg.cols);
+      v.style.setProperty('--tx', (-col * SHIFT_X) + '%');
+      if (SHIFT_Y) v.style.setProperty('--ty', (-row * SHIFT_Y) + '%');
+      if (count) count.textContent = (idx + 1) + ' / ' + cfg.tileCount;
     }
-  }
-  document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState === 'visible') tryPlay();
-  });
-  window.addEventListener('focus', tryPlay);
-  window.addEventListener('pageshow', tryPlay);
+    apply();
 
-  // ---- Reflect play/pause state (drives play button styling + icon) ----
-  var playBtn = document.getElementById('tile-play');
-  function reflect() {
-    mask.classList.toggle('is-paused', v.paused);
-    if (playBtn) playBtn.textContent = v.paused ? '▶' : '⏸';
-  }
-  v.addEventListener('play', reflect);
-  v.addEventListener('pause', reflect);
-  reflect();
-
-  // If autoplay was blocked by the browser, the video will be paused at load.
-  // Reflect this immediately so the play button is prominent.
-  v.addEventListener('loadedmetadata', reflect);
-  v.addEventListener('canplay', function() {
+    function reflect() {
+      mask.classList.toggle('is-paused', v.paused);
+      if (play) play.textContent = v.paused ? '▶' : '⏸';
+    }
+    v.addEventListener('play', reflect);
+    v.addEventListener('pause', reflect);
+    v.addEventListener('canplay', reflect);
     reflect();
-    // Best-effort attempt to start playing on first canplay (some mobile browsers
-    // won't have started autoplay by this point).
-    if (!userPaused && v.paused) {
+
+    function jumpToStart() {
+      try { v.currentTime = 0; } catch (e) {}
+      userPaused = false;
       var p = v.play(); if (p && p.catch) p.catch(function(){});
     }
-  });
 
-  // ---- Mobile tile navigation (6x5 grid → cycle through all 30 tiles) ----
-  // Video is scaled 600% wide × 500% tall inside the container.
-  var N_COLS = 6, N_ROWS = 5, N = 30;
-  var SHIFT_X = 100 / N_COLS;   // 16.667
-  var SHIFT_Y = 100 / N_ROWS;   // 20
-  var idx = 0;
-  function apply() {
-    var col = idx % N_COLS, row = Math.floor(idx / N_COLS);
-    v.style.setProperty('--tx', (-col * SHIFT_X) + '%');
-    v.style.setProperty('--ty', (-row * SHIFT_Y) + '%');
-    document.getElementById('tile-count').textContent = (idx + 1) + ' / ' + N;
-  }
-  apply();
+    if (prev) prev.addEventListener('click', function(e) {
+      e.stopPropagation();
+      idx = (idx - 1 + cfg.tileCount) % cfg.tileCount;
+      apply(); jumpToStart();
+    });
+    if (next) next.addEventListener('click', function(e) {
+      e.stopPropagation();
+      idx = (idx + 1) % cfg.tileCount;
+      apply(); jumpToStart();
+    });
+    if (play) play.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (v.paused) { userPaused = false; v.play(); }
+      else          { userPaused = true;  v.pause(); }
+    });
+    mask.addEventListener('click', function(e) {
+      if (e.target.tagName === 'BUTTON') return;
+      if (v.paused) { userPaused = false; v.play(); }
+      else          { userPaused = true;  v.pause(); }
+    });
 
-  function jumpToStart() {
-    // Reset the underlying video to t=0 so the new tile starts from its beginning.
-    try { v.currentTime = 0; } catch (e) {}
-    userPaused = false;
-    var p = v.play(); if (p && p.catch) p.catch(function(){});
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible' && !userPaused && v.paused) {
+        var p = v.play(); if (p && p.catch) p.catch(function(){});
+      }
+    });
   }
-  document.getElementById('tile-prev').addEventListener('click', function() {
-    idx = (idx - 1 + N) % N; apply(); jumpToStart();
+
+  initCarousel({
+    videoId: 'grid-video',
+    playBtnId: 'tile-play', prevBtnId: 'tile-prev', nextBtnId: 'tile-next',
+    countId: 'tile-count',
+    tileCount: 30, cols: 6, rows: 5,
   });
-  document.getElementById('tile-next').addEventListener('click', function() {
-    idx = (idx + 1) % N; apply(); jumpToStart();
-  });
-  document.getElementById('tile-play').addEventListener('click', function() {
-    if (v.paused) { userPaused = false; v.play(); }
-    else          { userPaused = true;  v.pause(); }
-  });
-  // Tap the video itself to toggle play/pause (mobile UX)
-  mask.addEventListener('click', function(e) {
-    if (e.target.tagName === 'BUTTON') return;
-    if (v.paused) { userPaused = false; v.play(); }
-    else          { userPaused = true;  v.pause(); }
+  initCarousel({
+    videoId: 'flops-video',
+    playBtnId: 'flops-play', prevBtnId: 'flops-prev', nextBtnId: 'flops-next',
+    countId: 'flops-count',
+    tileCount: 4, cols: 4, rows: 1,
   });
 })();
 </script>
