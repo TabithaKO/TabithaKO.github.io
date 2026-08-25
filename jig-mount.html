@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jig Mount — Factory Status 2026-08-20</title>
 <style>
@@ -92,6 +93,68 @@ p { margin: 0 0 14px; color: var(--text); }
   border-radius: 4px; padding: 12px; overflow: hidden;
 }
 .video-mask { position: relative; }
+
+/* Interactive grid-size controls (desktop) — mobile @media hides them */
+.grid-controls {
+  display: flex; gap: 6px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap;
+}
+.grid-btn {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text-mid);
+  font-family: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px; font-weight: 600; letter-spacing: 0.04em;
+  padding: 6px 14px; border-radius: 3px;
+  cursor: pointer; transition: color 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+.grid-btn:hover { border-color: var(--accent); color: var(--text); }
+.grid-btn.active {
+  background: var(--accent); border-color: var(--accent); color: var(--bg);
+}
+
+/* Individual per-tile grid — aspect ratio matches the selected cols×rows so wider grids
+   fill wider screens. Grid width = min(container width, height-cap × aspect). */
+.tiles-grid {
+  --cols: 4;
+  --rows: 3;
+  --tile-gap: 2px;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  grid-template-rows: repeat(var(--rows), 1fr);
+  gap: var(--tile-gap);
+  aspect-ratio: calc(var(--cols) * 4) / calc(var(--rows) * 3);
+  max-width: 100%;
+  max-height: 82vh;
+  width: min(100%, calc(82vh * var(--cols) * 4 / var(--rows) / 3));
+  margin: 0 auto;
+  background: #000;
+  padding: var(--tile-gap);
+  border-radius: 2px;
+}
+.tiles-grid video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+.tiles-grid video.hidden { display: none; }
+.grid-btn-sep { display: inline-block; width: 1px; align-self: stretch; background: var(--border); margin: 0 4px; }
+
+/* Mobile carousel controls sit next to the tiles-grid on mobile (hidden on desktop) */
+.tiles-mobile-controls { display: none; }
+
+/* Human-operator triple-video row */
+.triple-video {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px; padding: 12px;
+}
+.tv-cell { display: flex; flex-direction: column; gap: 6px; }
+.tv-cell video {
+  width: 100%; aspect-ratio: 3 / 4; height: auto;
+  object-fit: cover; display: block; background: #000; border-radius: 2px;
+}
+.tv-caption { font-size: 13px; color: var(--text-mid); text-align: center; padding: 2px 0 0; }
 video {
   width: 100%; height: auto; display: block; border-radius: 2px;
   background: #000;
@@ -303,6 +366,27 @@ td.num, th.num {
   .arms { grid-template-columns: 1fr; }
   header { flex-direction: column; gap: 6px; }
   .video-wrap { padding: 0; border-radius: 0; border-left: 0; border-right: 0; }
+  /* Swipable triple on mobile — horizontal scroll with snap-to-cell */
+  .triple-video {
+    display: flex;
+    gap: 12px;
+    padding: 0;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .triple-video::-webkit-scrollbar { display: none; }
+  .tv-cell {
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+  }
+
+  /* Multiview: hide the entire section on mobile */
+  #multiview-section { display: none; }
   .video-caption { padding: 10px 20px 4px; font-size: 13px; line-height: 1.5; }
   body { font-size: 15px; }
   h1 { font-size: 24px; }
@@ -357,7 +441,22 @@ td.num, th.num {
     width: 28%; text-align: center; padding: 8px 4px;
   }
 
-  /* Mobile carousel: crop one tile out of the single stitched video */
+  /* Adaptive grid controls are desktop-only; mobile uses single-tile carousel */
+  .grid-controls { display: none; }
+
+  /* Mobile: single-tile carousel for the tile-grid; flops keeps stitched crop */
+  .tiles-grid {
+    display: block;
+    max-width: 100%;
+    padding: 0;
+    background: #000;
+    position: relative;
+  }
+  .tiles-grid video { display: none; width: 100%; aspect-ratio: 4/3; }
+  .tiles-grid video.mobile-active { display: block; }
+  .tiles-mobile-controls { display: block; position: relative; }
+
+  /* Flops video crop-and-transform (unchanged from before) */
   .video-mask {
     aspect-ratio: 4 / 3;
     overflow: hidden;
@@ -368,12 +467,6 @@ td.num, th.num {
     position: absolute; top: 0; left: 0;
     transition: transform 220ms ease;
   }
-  /* Successes: 6 cols × 5 rows → video scaled 600% × 500% */
-  #grid-video {
-    width: 600%; height: 500%;
-    transform: translate(var(--tx, 0%), var(--ty, 0%));
-  }
-  /* Flops: 4 cols × 1 row → video scaled 400% × 100% */
   #flops-video {
     width: 400%; height: 100%;
     transform: translate(var(--tx, 0%), 0%);
@@ -431,36 +524,79 @@ td.num, th.num {
   </header>
 
   <section>
-    <h2>Some successful mounts</h2>
+    <h2>Problem statement</h2>
+    <p class="dim">This sleeve inversion operation is step 3 of 5 in the production of this medical device cover. The human operator unfolds dozens of these using this pole jig. The jig mount alone accounts for about 50% of the operation. <strong>The task was to teach the robot to perform this sleeve unfolding operation repeatedly and autonomously.</strong></p>
+    <div class="triple-video">
+      <div class="tv-cell">
+        <video autoplay muted loop playsinline preload="metadata"
+               poster="/assets/images/human-operator-demo-poster.jpg"
+               src="/assets/videos/human-operator-demo.mp4"></video>
+        <div class="tv-caption">full jig — factory floor demo</div>
+      </div>
+      <div class="tv-cell">
+        <video autoplay muted loop playsinline preload="metadata"
+               poster="/assets/images/human-operator-full-task-poster.jpg"
+               src="/assets/videos/human-operator-full-task.mp4"></video>
+        <div class="tv-caption">small jig — full task</div>
+      </div>
+      <div class="tv-cell">
+        <video autoplay muted loop playsinline preload="metadata"
+               poster="/assets/images/human-operator-half-task-poster.jpg"
+               src="/assets/videos/human-operator-half-task.mp4"></video>
+        <div class="tv-caption">small jig — 50% of the task</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="multiview-section">
+    <h2>Multiview presentation</h2>
+    <p class="dim">This demo shows autonomous operation of the sleeve around the jig (pole) from the 3 different camera views used during training.</p>
     <div class="video-wrap">
-      <div class="video-mask">
-        <video id="grid-video" autoplay muted loop playsinline preload="metadata"
-               poster="/assets/images/jig-mount-successes-poster.jpg"
-               src="/assets/videos/jig-mount-successes.mp4?v=4"></video>
+      <video autoplay muted loop playsinline preload="auto"
+             poster="/assets/images/jig-mount-multiview-poster.jpg"
+             src="/assets/videos/jig-mount-multiview.mp4?v=2"></video>
+    </div>
+  </section>
+
+  <section>
+    <h2>Some successful jig mounts</h2>
+    <div class="video-wrap" id="successes-wrap">
+      <div class="grid-controls" role="group" aria-label="Choose how many mounts to show at once">
+        <button class="grid-btn"        data-cols="3" data-rows="3">3 × 3</button>
+        <button class="grid-btn active" data-cols="4" data-rows="3">4 × 3</button>
+        <button class="grid-btn"        data-cols="5" data-rows="4">5 × 4</button>
+        <button class="grid-btn"        data-cols="6" data-rows="5">6 × 5</button>
+        <button class="grid-btn"        data-cols="8" data-rows="4">8 × 4</button>
+      </div>
+      <div class="tiles-grid" id="tiles-grid" style="--cols: 3;">
+        <script>document.write(Array.from({length:33},(_,i)=>{var n=String(i+1).padStart(2,'0');return '<video autoplay muted loop playsinline preload="metadata" src="/assets/videos/jig-mount-tiles/'+n+'.mp4?v=2"></video>';}).join(''));</script>
+      </div>
+      <div class="tiles-mobile-controls">
         <button id="tile-play" class="tile-btn tile-play" aria-label="Play or pause">▶</button>
         <button id="tile-prev" class="tile-btn tile-side tile-prev" aria-label="Previous clip">‹</button>
         <button id="tile-next" class="tile-btn tile-side tile-next" aria-label="Next clip">›</button>
-        <div id="tile-count" class="tile-count">1 / 30</div>
+        <div id="tile-count" class="tile-count">1 / 33</div>
       </div>
       <div class="video-caption">
-        <span>1x speed, shorter clips loop · a <span style="display:inline-block;width:14px;height:14px;background:#ff5555;border-radius:2px;vertical-align:-2px;margin:0 3px"></span> in a tile's top-right marks a clip longer than 60 s that was sped up to fit — those are clustered in the right two columns for easy comparison</span>
+        <span>1x speed, shorter clips loop · a <span style="display:inline-block;width:14px;height:14px;background:#ff5555;border-radius:2px;vertical-align:-2px;margin:0 3px"></span> in a tile's top-right marks a clip longer than 60 s that was sped up to fit · a <span style="display:inline-block;width:14px;height:14px;background:#ffdd33;border-radius:2px;vertical-align:-2px;margin:0 3px"></span> marks a run that required brief human intervention</span>
       </div>
     </div>
   </section>
 
   <section>
     <h2>Success projection with reset arm</h2>
-    <p class="dim">Assumes ~45 s per attempt (30 s policy + 15 s reset). A dedicated reset arm removes the human bottleneck between attempts — sustained autonomous cycles become possible. The <strong>left column</strong> is the honest expected value at today's average success rate — the time this rig would take to accumulate that many successes at the rate we actually measured today. The <strong>right column</strong> is the fastest execution: the same rig operating at its best-run success rate (50%), showing what's possible when the hardware and policy align.</p>
+    <p class="dim">Assumes a conservative 70 s per attempt (60 s jig mount + 10 s reset arm). A dedicated reset arm removes the human bottleneck between attempts — sustained autonomous cycles become possible. The <strong>left column</strong> is the honest expected value at today's average success rate — the time this rig would take to accumulate that many successes at the rate we actually measured today. The <strong>right column</strong> is the fastest execution: the same rig operating at its best-run success rate (50%), showing what's possible when the hardware and policy align.</p>
     <table>
       <thead>
         <tr><th>Target</th><th class="num">Observed <span class="pct">avg @ 35%</span></th><th class="num">Best run <span class="pct">fastest @ 50%</span></th></tr>
       </thead>
       <tbody>
-        <tr><td>100 successes</td><td class="num" style="color:var(--good)">3.6 h</td><td class="num">2.5 h</td></tr>
-        <tr><td>150 successes</td><td class="num" style="color:var(--good)">5.4 h</td><td class="num">3.8 h</td></tr>
-        <tr><td>300 successes</td><td class="num" style="color:var(--good)">10.7 h</td><td class="num">7.5 h</td></tr>
+        <tr><td>100 successes</td><td class="num" style="color:var(--good)">5.6 h</td><td class="num">3.9 h</td></tr>
+        <tr><td>150 successes</td><td class="num" style="color:var(--good)">8.3 h</td><td class="num">5.8 h</td></tr>
+        <tr><td>300 successes</td><td class="num" style="color:var(--good)">16.7 h</td><td class="num">11.7 h</td></tr>
       </tbody>
     </table>
+    <p class="dim" style="margin-top: 12px; font-size: 14px;">These numbers are on hobbyist-grade hardware — a meaningful speed-up is guaranteed on reliable research-grade or industrial hardware.</p>
   </section>
 
   <section>
@@ -468,9 +604,9 @@ td.num, th.num {
     <p class="dim">Four representative failure runs, cam 0 only. Speed adjusted so all four end at 60 s.</p>
     <div class="video-wrap" style="margin-bottom: 32px;">
       <div class="video-mask">
-        <video id="flops-video" autoplay muted loop playsinline preload="metadata"
+        <video id="flops-video" autoplay muted loop playsinline preload="auto"
                poster="/assets/images/jig-mount-flops-poster.jpg"
-               src="/assets/videos/jig-mount-flops.mp4?v=5"></video>
+               src="/assets/videos/jig-mount-flops.mp4?v=6"></video>
         <button id="flops-play" class="tile-btn tile-play" aria-label="Play or pause">▶</button>
         <button id="flops-prev" class="tile-btn tile-side tile-prev" aria-label="Previous clip">‹</button>
         <button id="flops-next" class="tile-btn tile-side tile-next" aria-label="Next clip">›</button>
@@ -486,7 +622,7 @@ td.num, th.num {
     <h2>Live hardware inconsistency</h2>
     <p class="dim">A single monitored deploy run with per-joint tracking error overlaid live. The panel on the right shows, for each of the six joints on both arms, how far the actual servo position is from what the policy commanded — updated every frame. <strong style="color: #85e09b">Green &lt; 3°</strong>, <strong style="color: #f0c266">amber 3–10°</strong>, <strong style="color: #ff7573">red &gt; 10°</strong>. The <strong>+</strong> sign means the servo overshot; <strong>−</strong> means it undershot. Watch the right column — the elbow peaks at <strong>45°</strong> of undershoot mid-run, the pan holds a steady 20–30° gap, and the gripper stays red almost throughout. The left arm stays mostly green: the arms are asymmetrically degraded, and that asymmetry is the story of the current success rate.</p>
     <div class="video-wrap" style="margin-bottom: 32px;">
-      <video id="annotated-video" autoplay muted loop playsinline preload="metadata"
+      <video id="annotated-video" autoplay muted loop playsinline preload="auto"
              poster="/assets/images/jig-mount-hardware-poster.jpg">
         <source src="/assets/videos/jig-mount-hardware-inconsistency.mp4" type="video/mp4">
       </video>
@@ -612,16 +748,94 @@ td.num, th.num {
   }
 
   initCarousel({
-    videoId: 'grid-video',
-    playBtnId: 'tile-play', prevBtnId: 'tile-prev', nextBtnId: 'tile-next',
-    countId: 'tile-count',
-    tileCount: 30, cols: 6, rows: 5,
-  });
-  initCarousel({
     videoId: 'flops-video',
     playBtnId: 'flops-play', prevBtnId: 'flops-prev', nextBtnId: 'flops-next',
     countId: 'flops-count',
     tileCount: 4, cols: 4, rows: 1,
   });
+
+  // ---- Successes tile-grid: interactive N-cols on desktop, single-tile carousel on mobile ----
+  var successWrap = document.getElementById('successes-wrap');
+  var tilesGrid   = document.getElementById('tiles-grid');
+  if (successWrap && tilesGrid) {
+    var tileVideos = tilesGrid.querySelectorAll('video');
+    var countEl    = document.getElementById('tile-count');
+    var playBtn    = document.getElementById('tile-play');
+    var prevBtn    = document.getElementById('tile-prev');
+    var nextBtn    = document.getElementById('tile-next');
+    var idx = 0;
+    var userPaused = false;
+
+    function isMobileView() { return window.innerWidth <= 720; }
+
+    // Desktop: show first (cols*rows) videos; hide the rest
+    function applyDesktopLayout(cols, rows) {
+      tilesGrid.style.setProperty('--cols', cols);
+      tilesGrid.style.setProperty('--rows', rows);
+      var visible = cols * rows;
+      tileVideos.forEach(function(v, i) {
+        if (i < visible) {
+          v.classList.remove('hidden');
+          if (v.paused && !userPaused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+        } else {
+          v.classList.add('hidden');
+          v.pause();
+        }
+      });
+      successWrap.querySelectorAll('.grid-btn').forEach(function(b) {
+        b.classList.toggle('active', +b.dataset.cols === cols && +b.dataset.rows === rows);
+      });
+    }
+
+    // Mobile: show ONE video at a time (indexed), others hidden
+    function applyMobile(newIdx) {
+      idx = (newIdx + tileVideos.length) % tileVideos.length;
+      tileVideos.forEach(function(v, i) {
+        if (i === idx) {
+          v.classList.add('mobile-active');
+          try { v.currentTime = 0; } catch (e) {}
+          if (!userPaused) { var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+        } else {
+          v.classList.remove('mobile-active');
+          v.pause();
+        }
+      });
+      if (countEl) countEl.textContent = (idx + 1) + ' / ' + tileVideos.length;
+    }
+
+    function applyForViewport() {
+      if (isMobileView()) applyMobile(idx);
+      else applyDesktopLayout(4, 3);   // desktop default = 4x3 (12 tiles, 16:9 aspect — fills wide screens)
+    }
+    applyForViewport();
+
+    successWrap.querySelectorAll('.grid-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (isMobileView()) return;
+        userPaused = false;
+        applyDesktopLayout(+btn.dataset.cols, +btn.dataset.rows);
+      });
+    });
+
+    if (prevBtn) prevBtn.addEventListener('click', function(e) {
+      e.stopPropagation(); userPaused = false; applyMobile(idx - 1);
+    });
+    if (nextBtn) nextBtn.addEventListener('click', function(e) {
+      e.stopPropagation(); userPaused = false; applyMobile(idx + 1);
+    });
+    if (playBtn) playBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var target = isMobileView() ? tileVideos[idx] : tileVideos[0];
+      if (target.paused) { userPaused = false; tileVideos.forEach(function(v){ if (!v.classList.contains('hidden') || v.classList.contains('mobile-active')) v.play(); }); }
+      else               { userPaused = true;  tileVideos.forEach(function(v){ v.pause(); }); }
+    });
+
+    // On viewport crossing 720 boundary, reset
+    var wasMobile = isMobileView();
+    window.addEventListener('resize', function() {
+      var now = isMobileView();
+      if (now !== wasMobile) { wasMobile = now; applyForViewport(); }
+    });
+  }
 })();
 </script>
