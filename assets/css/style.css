@@ -126,6 +126,10 @@ code {
   font-weight: 500;
   margin-bottom: 1.5rem;
 }
+.hero .subtitle-former {
+  opacity: 0.7;
+  font-weight: 400;
+}
 .hero .bio {
   font-size: 1.05rem;
   color: var(--text);

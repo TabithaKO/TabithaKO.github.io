@@ -5,7 +5,7 @@ title: Tabitha Oanda
 
 <div class="hero">
   <h1>Tabitha Oanda</h1>
-  <p class="subtitle">Robotics Engineer · Fashion Designer · PhD Researcher at Brown University</p>
+  <p class="subtitle">Robotics Engineer and Researcher · Fashion Designer · <span class="subtitle-former">Formerly Brown University, PhD</span></p>
 
   <p class="bio">
     Cloth is deformable, slippery, and hard to track — which means off-the-shelf robot setups don't cut it. I build the full stack: a bimanual hardware platform for manipulation, multi-camera perception using foundation vision models to detect and segment fabric across frames in 3D. I use teleoperation tools that make collecting training data practical. Following data collection, I train cloth dynamics models that can be used for model predictive control (MPC) and reinforcement learning policies for complex tasks.
