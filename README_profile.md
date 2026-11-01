@@ -1,6 +1,6 @@
 ### Hi, I'm Tabby 👋
 
-I'm a robotics engineer working on robotic cloth manipulation (formerly Brown University, PhD). My work is on building the hardware, perception, and learning systems needed to handle fabric reliably on real robots.
+I'm a robotics engineer working on robotic cloth manipulation. My work is on building the hardware, perception, and learning systems needed to handle fabric reliably on real robots.
 
 ---
 
